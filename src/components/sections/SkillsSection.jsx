@@ -103,7 +103,7 @@ export function SkillsSection() {
             centerScale={1.25}
             edgeBlur={2}
             cardsPerTurn={7}
-            pauseOnHover
+            pauseOnHover={false}
           />
         </div>
       </div>
