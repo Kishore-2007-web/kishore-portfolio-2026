@@ -94,11 +94,15 @@ const InfiniteSpiral = ({
       previousTime = time;
 
       const autoEnabled = animationMode === 'auto' || animationMode === 'all';
-      const motionPaused = draggingRef.current || (pauseOnHover && hoveredRef.current);
+      const isDragging = draggingRef.current;
+      const isHovered = pauseOnHover && hoveredRef.current;
       const directionMultiplier = direction === 'down' ? -1 : 1;
+      const baseSpeed = speed * directionMultiplier;
       const desiredAutoSpeed =
-        autoEnabled && visibleRef.current && !reducedMotion.matches && !motionPaused
-          ? speed * directionMultiplier
+        autoEnabled && visibleRef.current && !reducedMotion.matches && !isDragging
+          ? isHovered
+            ? baseSpeed * 0.2
+            : baseSpeed
           : 0;
       const speedBlend = 1 - Math.exp(-delta * 7);
       autoSpeedRef.current += (desiredAutoSpeed - autoSpeedRef.current) * speedBlend;
@@ -253,21 +257,31 @@ const InfiniteSpiral = ({
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '8px',
+                    padding: '10px 6px',
                     textAlign: 'center',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255, 255, 255, 0.16)',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.22)',
                     borderRadius: `${cardRadius}px`,
-                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    boxShadow: '0 14px 36px 0 rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3)',
                     color: '#ffffff',
                     boxSizing: 'border-box',
-                    userSelect: 'none'
+                    userSelect: 'none',
+                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
                   {item.icon && (
-                    <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                    <div
+                      style={{
+                        marginBottom: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#ffffff',
+                        filter: 'drop-shadow(0 0 12px rgba(255, 255, 255, 0.4))'
+                      }}
+                    >
                       {item.icon}
                     </div>
                   )}
@@ -275,14 +289,15 @@ const InfiniteSpiral = ({
                     <span
                       style={{
                         fontFamily: 'var(--font-mono, monospace)',
-                        fontSize: '0.625rem',
+                        fontSize: '0.6875rem',
                         fontWeight: 700,
-                        letterSpacing: '0.04em',
-                        lineHeight: 1.15,
+                        letterSpacing: '0.06em',
+                        lineHeight: 1.18,
                         color: '#ffffff',
                         textTransform: 'uppercase',
                         wordBreak: 'break-word',
-                        maxWidth: '92%'
+                        maxWidth: '95%',
+                        textShadow: '0 2px 6px rgba(0, 0, 0, 0.8)'
                       }}
                     >
                       {item.title}
