@@ -7,7 +7,7 @@ export function StrokeText({
   fillColor = "#F8FAFC",
   strokeWidth = 1.4,
   drawDuration = 1.6,
-  fillDelay = 0.2,
+  fillDelay = 1.0,
   stagger = 0.05,
   ease = "power2.out",
   trigger = "mount",
@@ -15,6 +15,7 @@ export function StrokeText({
   fontSize = 128,
   fontWeight = 800,
   letterSpacing = -4,
+  loop = true,
   className = ""
 }) {
   const containerRef = useRef(null);
@@ -38,7 +39,11 @@ export function StrokeText({
       clipRect.setAttribute('width', '0%');
     }
 
-    const tl = gsap.timeline({ delay: 0.1 });
+    const tl = gsap.timeline({
+      repeat: loop ? -1 : 0,
+      repeatDelay: 0.5,
+      delay: 0.2
+    });
 
     // 1. Draw outline stroke
     tl.to(strokeEl, {
@@ -60,10 +65,29 @@ export function StrokeText({
       );
     }
 
+    // 3. Pause & reset smoothly for continuous loop
+    if (loop) {
+      tl.to(clipRect, {
+        attr: { width: '0%' },
+        duration: 0.7,
+        ease: 'power2.inOut',
+        delay: 1.8
+      });
+      tl.to(
+        strokeEl,
+        {
+          strokeDashoffset: dashLength,
+          duration: 0.8,
+          ease: 'power2.inOut'
+        },
+        '-=0.4'
+      );
+    }
+
     return () => {
       tl.kill();
     };
-  }, [text, drawDuration, fillDelay, ease, fillMode]);
+  }, [text, drawDuration, fillDelay, ease, fillMode, loop]);
 
   return (
     <div
