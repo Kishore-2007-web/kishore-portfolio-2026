@@ -104,6 +104,8 @@ const CurvedLoop = ({
 
   const cursorStyle = interactive ? (dragRef.current ? 'grabbing' : 'grab') : 'auto';
 
+  const svgHeight = Math.max(160, Math.min(500, 80 + curveAmount * 0.8));
+
   return (
     <div
       className="curved-loop-jacket"
@@ -113,7 +115,7 @@ const CurvedLoop = ({
       onPointerUp={endDrag}
       onPointerLeave={endDrag}
     >
-      <svg className="curved-loop-svg" viewBox="0 0 1440 120">
+      <svg className="curved-loop-svg" viewBox={`0 0 1440 ${svgHeight}`}>
         <text ref={measureRef} xmlSpace="preserve" style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
           {text}
         </text>

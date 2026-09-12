@@ -7,7 +7,7 @@ export function CurvedLoopSection() {
       <CurvedLoop
         marqueeText="WEB • SOFTWARE • AI • GAME DEVELOPMENT • 3D • BUILD WITH PURPOSE • "
         speed={1.5}
-        curveAmount={120}
+        curveAmount={300}
         direction="left"
         interactive={true}
         className="curved-loop-text"
