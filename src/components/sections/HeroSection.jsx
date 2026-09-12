@@ -21,10 +21,10 @@ export function HeroSection() {
       }}
     >
       {/* ReactBits WebGPU AeroShards Background Visual */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <WebGLErrorBoundary minHeight="100vh">
           <AeroShards
-            backgroundColor="#120F17"
+            backgroundColor="#000000"
             shardColor="#ffffff"
             accentColor="#ffffff"
             placement="full"

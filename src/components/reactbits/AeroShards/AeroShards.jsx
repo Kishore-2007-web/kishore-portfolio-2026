@@ -10,26 +10,23 @@ const EFFECTS = { none: 0, dither: 1, ascii: 2 };
 const FLOWS = { stream: 0, vortex: 1, ribbon: 2 };
 const RIPPLE_SPEED = 4.2;
 const RIPPLE_TAIL = 1.8;
-
 const MATERIAL_PRESETS = {
   pearl: { roughness: 0.46, brightness: 0.92, glow: 0.54, highlightMix: 0.78 },
   chrome: { roughness: 0.1, brightness: 1.12, glow: 0.38, highlightMix: 0.9 },
   satin: { roughness: 0.74, brightness: 0.84, glow: 0.42, highlightMix: 0.66 }
 };
-
 const DETAIL_PRESETS = {
   bold: { count: 0.58, size: 1.32 },
   balanced: { count: 1, size: 0.96 },
   fine: { count: 1.15, size: 0.7 }
 };
-
 const QUALITY_PRESETS = {
   low: { count: 1900, dpr: 1.5, supersamplePixels: 3000000 },
   medium: { count: 3200, dpr: 2, supersamplePixels: 6000000 },
   high: { count: 4600, dpr: 2, supersamplePixels: 8000000 }
 };
-
 const RUNTIME_QUALITY = [{ countScale: 1 }, { countScale: 0.86 }, { countScale: 0.72 }];
+// Only the halo is downsampled. Shard edges keep their display-resolution detail.
 const BLOOM_SCALES = [0.25, 0.22, 0.18];
 const FRAME_STATES = {
   interactive: { interval: 1000 / 60, continuous: true },
@@ -93,6 +90,7 @@ const advanceHold = (hold, elapsed, disabled) => {
   }
   const previousElapsed = hold.elapsed;
   hold.elapsed = hold.pointerId === null ? 0 : hold.elapsed + elapsed;
+  // A short click remains a ripple. Gathering starts only after a deliberate hold.
   const engaging = hold.pointerId !== null && hold.elapsed > 0.15;
   const step = engaging && previousElapsed < 0.15 ? hold.elapsed - 0.15 : elapsed;
   const target = engaging ? 1 : 0;
@@ -119,6 +117,7 @@ const resetPointerMotion = pointer => {
 const advancePointer = (pointer, elapsed) => {
   if (elapsed <= 0) return;
 
+  // Exact critically damped motion keeps velocity continuous through direction changes.
   const response = 26;
   const decay = Math.exp(-response * elapsed);
   for (let axis = 0; axis < 2; axis += 1) {
@@ -128,6 +127,7 @@ const advancePointer = (pointer, elapsed) => {
     pointer.velocity[axis] = (pointer.velocity[axis] - response * momentum * elapsed) * decay;
   }
 
+  // Let the field ease into contact, then release a little more slowly.
   const presenceTarget = pointer.active ? 1 : 0;
   const presenceResponse = pointer.active ? 24 : 12;
   const presenceDecay = Math.exp(-presenceResponse * elapsed);
@@ -147,6 +147,7 @@ const advancePointer = (pointer, elapsed) => {
 const createRipples = () => Array.from({ length: 4 }, () => ({ origin: [0.5, 0.5], age: 0, duration: 0, strength: 0 }));
 
 const startRipple = (ripples, origin, aspect, strength = 1) => {
+  // Preserve waves already in flight; rapid clicks never reset a visible wave.
   const ripple = ripples.find(value => value.strength === 0);
   if (!ripple) return false;
   ripple.origin = [...origin];
@@ -176,7 +177,6 @@ const mixColor = (from, to, amount) => [
   1
 ];
 
-// WGSL Shaders
 const SHARD_SHADER = `
 struct ViewParams {
   viewport: vec4f,
@@ -394,6 +394,7 @@ fn mobilePath(seedPhase: f32, distance: f32, aspect: f32) -> PathSample {
 }
 
 fn weightedPath(seedPhase: f32, phaseOffset: f32, aspect: f32, weights: vec4f) -> PathSample {
+  // Every placement samples the same point along the stream, including its wrap seam.
   let phase = fract(seedPhase + phaseOffset);
   var result: PathSample;
   result.position = vec3f(0.0);
@@ -440,6 +441,7 @@ fn weightedPath(seedPhase: f32, phaseOffset: f32, aspect: f32, weights: vec4f) -
 }
 
 fn pointerField(delta: vec2f, radius: f32, flow: vec2f, depth: f32) -> vec2f {
+  // A curved Gaussian follows the flow, with a long, boundary-free tail.
   let offset = delta / max(radius, 0.001);
   let along = dot(offset, flow);
   let across = dot(offset, vec2f(-flow.y, flow.x));
@@ -529,6 +531,7 @@ fn vs_main(
     var formedDirection = direction * view.formation.x;
     if (view.formation.y > 0.00001) {
       let radius = 0.16 + sqrt(seedLane) * 0.74 * (0.45 + view.shape.x * 0.55);
+      // Constant tangential travel speed; inner rings turn faster without speeding up.
       let angle = seedPhase * 6.28318530718 + view.viewport.w / radius;
       let radial = vec2f(cos(angle), sin(angle));
       let position = vec3f(center + radial * radius, (seedDepth - 0.5) * view.shape.y * 0.65 + radial.y * 0.2);
@@ -566,6 +569,7 @@ fn vs_main(
   }
 
   if (view.gather.z > 0.00001) {
+    // A Gaussian cloud has a dense center and soft outskirts, never a ring or a hard outline.
     let relative = (renderPosition.xy - view.gather.xy) * view.viewport.z;
     let reach = length(relative);
     let radius = sqrt(-2.0 * log(max(seedLane, 0.0001)));
@@ -575,6 +579,7 @@ fn vs_main(
     let drift = vec2f(sin(layer + view.gather.w * 0.22), cos(layer * 1.7 - view.gather.w * 0.18)) * 0.055;
     let cloud = orbit * radius * vec2f(0.2, 0.16) + drift;
     let cluster = vec3f(view.gather.xy + cloud / view.viewport.z, (seedDepth - 0.5) * 0.42);
+    // Distant layers arrive later; there is no single closing boundary.
     let amount = pow(view.gather.z, 1.0 + seedDepth * 0.65 + min(reach, 4.0) * 0.12);
     let curledDirection = safeNormalize(vec3f(-orbit.y, orbit.x, sin(layer) * 0.35));
     renderPosition = mix(renderPosition, cluster, amount);
@@ -682,11 +687,13 @@ fn vs_main(
       creaseColor = mix(creaseColor, satinColor, 0.56);
     }
 
+    // A light page acts as a broad fill light, keeping shaded facets in the chosen palette.
     let fill = mix(view.accentColor.rgb, view.baseColor.rgb, depthFog)
       * (0.38 + diffuse * 0.12) * facet * view.environment.x;
     color += fill;
     creaseColor += fill;
 
+    // Reuse the displacement wave, so the accent catches each facet as the ripple arrives.
     let pulseColor = mix(view.accentColor.rgb, view.highlightColor.rgb, 0.18);
     color += pulseColor * rippleLight * (0.85 + fresnel * 0.45);
     creaseColor += pulseColor * rippleLight * 1.35;
@@ -696,6 +703,7 @@ fn vs_main(
     mapped = aces(color * exposure);
     mappedCrease = aces(creaseColor * exposure);
     shardAlpha = mix(0.58, 0.97, depthFog);
+    // Open path endpoints can cross the viewport while morphing. Taper only that moving seam.
     let seam = smoothstep(0.0, 0.035, path.phase) * (1.0 - smoothstep(0.965, 1.0, path.phase));
     shardAlpha *= mix(1.0, seam, view.transport.y * view.formation.x * (1.0 - view.gather.z));
   }
@@ -746,6 +754,7 @@ fn visibleResidual(uv: vec2f) -> vec4f {
   let knee = post.bloomInfo.w;
   let contribution = smoothstep(threshold - knee, threshold + knee, energy);
   let coverage = energy * contribution;
+  // Store a premultiplied palette halo on light surfaces, never negative radiance.
   return vec4f(mix(residual * contribution, post.tint.rgb * coverage, post.finishing.w), coverage);
 }
 
@@ -782,31 +791,32 @@ fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
 }
 `;
 
+// Compact 5×7 glyphs keep ASCII self-contained: no font downloads, canvas atlas, or readbacks.
+// Space, punctuation, directional strokes, and dense glyphs cover the six shape samples.
 const ASCII_GLYPHS = [
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 12, 12],
-  [0, 12, 12, 0, 12, 12, 0],
-  [0, 0, 0, 31, 0, 0, 0],
-  [0, 0, 31, 0, 31, 0, 0],
-  [4, 4, 4, 4, 4, 4, 4],
-  [1, 2, 2, 4, 8, 8, 16],
-  [16, 8, 8, 4, 2, 2, 1],
-  [0, 4, 4, 31, 4, 4, 0],
-  [0, 21, 14, 31, 14, 21, 0],
-  [0, 17, 10, 4, 10, 17, 0],
-  [2, 4, 8, 16, 8, 4, 2],
-  [8, 4, 2, 1, 2, 4, 8],
-  [3, 4, 8, 8, 8, 4, 3],
-  [24, 4, 2, 2, 2, 4, 24],
-  [0, 0, 14, 17, 17, 14, 0],
-  [14, 17, 17, 17, 17, 17, 14],
-  [10, 10, 31, 10, 31, 10, 10],
-  [14, 17, 23, 21, 23, 16, 14],
-  [17, 27, 21, 21, 17, 17, 17],
-  [17, 17, 17, 21, 21, 27, 17],
-  [14, 17, 17, 31, 17, 17, 17]
+  [0, 0, 0, 0, 0, 0, 0], // space
+  [0, 0, 0, 0, 0, 12, 12], // .
+  [0, 12, 12, 0, 12, 12, 0], // :
+  [0, 0, 0, 31, 0, 0, 0], // -
+  [0, 0, 31, 0, 31, 0, 0], // =
+  [4, 4, 4, 4, 4, 4, 4], // |
+  [1, 2, 2, 4, 8, 8, 16], // /
+  [16, 8, 8, 4, 2, 2, 1], // backslash
+  [0, 4, 4, 31, 4, 4, 0], // +
+  [0, 21, 14, 31, 14, 21, 0], // *
+  [0, 17, 10, 4, 10, 17, 0], // x
+  [2, 4, 8, 16, 8, 4, 2], // <
+  [8, 4, 2, 1, 2, 4, 8], // >
+  [3, 4, 8, 8, 8, 4, 3], // (
+  [24, 4, 2, 2, 2, 4, 24], // )
+  [0, 0, 14, 17, 17, 14, 0], // o
+  [14, 17, 17, 17, 17, 17, 14], // O
+  [10, 10, 31, 10, 31, 10, 10], // #
+  [14, 17, 23, 21, 23, 16, 14], // @
+  [17, 27, 21, 21, 17, 17, 17], // M
+  [17, 17, 17, 21, 21, 27, 17], // W
+  [14, 17, 17, 31, 17, 17, 17] // A
 ];
-
 const ASCII_SAMPLES = [
   [0.28, 0.26],
   [0.72, 0.14],
@@ -815,7 +825,6 @@ const ASCII_SAMPLES = [
   [0.28, 0.86],
   [0.72, 0.74]
 ];
-
 const ASCII_SHAPES = ASCII_GLYPHS.map(rows =>
   ASCII_SAMPLES.map(([cx, cy]) => {
     let sum = 0;
@@ -830,7 +839,6 @@ const ASCII_SHAPES = ASCII_GLYPHS.map(rows =>
     return sum / Math.max(count, 1);
   })
 );
-
 for (let sample = 0; sample < 6; sample += 1) {
   const peak = Math.max(...ASCII_SHAPES.map(shape => shape[sample]));
   for (const shape of ASCII_SHAPES) shape[sample] /= Math.max(peak, 0.001);
@@ -851,6 +859,7 @@ fn sampleSource(pixel: vec2f) -> vec3f {
   return textureSampleLevel(sourceTexture, sourceSampler, pixel / style.viewport.xy, 0.0).rgb;
 }
 fn inkLevel(color: vec3f) -> f32 {
+  // Measure contrast against the chosen background, not black: white stays empty too.
   return clamp(dot(abs(color - style.background.rgb), vec3f(0.2126, 0.7152, 0.0722)) * 2.4, 0.0, 1.0);
 }
 `;
@@ -903,6 +912,7 @@ fn fs_main(@builtin(position) pixel: vec4f) -> @location(0) vec4f {
   let gain = 1.0 / max(peak, 0.001);
   let a = vec3f(values[0], values[1], values[2]);
   let b = vec3f(values[3], values[4], values[5]);
+  // Normalize shape separately from ink color so thin, dim shards do not all select space.
   let shapeA = a * sqrt(a * gain) * gain;
   let shapeB = b * sqrt(b * gain) * gain;
   var best = 0u;
@@ -913,6 +923,7 @@ fn fs_main(@builtin(position) pixel: vec4f) -> @location(0) vec4f {
     let distance = dot(da, da) + dot(db, db);
     if (distance < bestDistance) { best = glyph; bestDistance = distance; }
   }
+  // RGB stores the scene palette; alpha is an exact byte-sized glyph index, not opacity.
   let ink = style.background.rgb + (colorSum / weightSum - style.background.rgb) * 2.2;
   return vec4f(clamp(ink, vec3f(0.0), vec3f(1.0)), f32(best) / 255.0);
 }
@@ -923,6 +934,7 @@ const STYLE_SHADER = `${STYLE_COMMON}
 const GLYPHS = array<vec2u, ${ASCII_GLYPHS.length}>(
   ${ASCII_GLYPHS.map(rows => `vec2u(${rows.slice(0, 4).reduce((sum, row, i) => sum + row * 2 ** (i * 5), 0)}u, ${rows.slice(4).reduce((sum, row, i) => sum + row * 2 ** (i * 5), 0)}u)`).join(',\n  ')}
 );
+// A centered Bayer screen distributes quantization error across a stable 4×4 grid.
 const THRESHOLDS = array<f32, 16>(
   0.03125, 0.53125, 0.15625, 0.65625, 0.78125, 0.28125, 0.90625, 0.40625,
   0.21875, 0.71875, 0.09375, 0.59375, 0.96875, 0.46875, 0.84375, 0.34375
@@ -951,6 +963,7 @@ fn fs_main(@builtin(position) pixel: vec4f) -> @location(0) vec4f {
   }
   let info = textureLoad(asciiCells, clamp(cell, vec2i(0), vec2i(textureDimensions(asciiCells)) - 1), 0);
   let glyph = min(u32(round(info.a * 255.0)), ${ASCII_GLYPHS.length - 1}u);
+  // Integrate the compact glyph over each display pixel; keep subpixel strokes visible.
   let local = fract(cellPosition) * vec2f(6.0, 10.0) - vec2f(0.5, 1.5);
   let footprint = vec2f(6.0, 10.0) / style.viewport.zw;
   let low = local - footprint * 0.5;
@@ -993,6 +1006,7 @@ fn hash12(value: vec2f) -> f32 {
 @fragment
 fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location(0) vec4f {
   let background = post.background.rgb;
+  // Scene and output have identical dimensions; never filter the sharp base image.
   var scene = textureLoad(sceneTexture, vec2i(pixel.xy), 0).rgb;
 
   if (post.finishing.z > 0.000001) {
@@ -1011,6 +1025,7 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location
   var foreground = scene - background;
   if (post.finishing.x > 0.0001) {
     let bloom = textureSampleLevel(bloomTexture, linearSampler, uv, 0.0);
+    // A colored haze remains visible on white; protect the opaque facet colors underneath.
     let haloMask = 1.0 - smoothstep(0.04, 0.4, length(foreground));
     let haloOpacity = min(bloom.a * post.finishing.x * 1.8, 0.65) * haloMask;
     let haloColor = bloom.rgb / max(bloom.a, 0.00001);
@@ -1030,9 +1045,26 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location
 `;
 
 const parseColor = (value, fallback) => {
-  const match = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(value);
-  const source = match || /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(fallback);
-  return [parseInt(source[1], 16) / 255, parseInt(source[2], 16) / 255, parseInt(source[3], 16) / 255, 1];
+  if (typeof value === 'string') {
+    const hex = value.replace('#', '').trim();
+    if (hex.length === 3) {
+      const r = parseInt(hex[0] + hex[0], 16) / 255;
+      const g = parseInt(hex[1] + hex[1], 16) / 255;
+      const b = parseInt(hex[2] + hex[2], 16) / 255;
+      return [r, g, b, 1];
+    }
+    if (hex.length === 6 || hex.length === 8) {
+      const r = parseInt(hex.slice(0, 2), 16) / 255;
+      const g = parseInt(hex.slice(2, 4), 16) / 255;
+      const b = parseInt(hex.slice(4, 6), 16) / 255;
+      const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+      if (!isNaN(r) && !isNaN(g) && !isNaN(b)) return [r, g, b, isNaN(a) ? 1 : a];
+    }
+  }
+  const match = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(fallback);
+  return match
+    ? [parseInt(match[1], 16) / 255, parseInt(match[2], 16) / 255, parseInt(match[3], 16) / 255, 1]
+    : [0, 0, 0, 1];
 };
 
 const resolveQuality = canvas => {
@@ -1046,6 +1078,7 @@ const resolveQuality = canvas => {
 
 const resolveDpr = (preset, canvas) => {
   const cssPixels = Math.max(1, canvas.clientWidth * canvas.clientHeight);
+  // The budget limits supersampling, never the one-pixel-per-CSS-pixel base image.
   const budgetDpr = Math.sqrt(preset.supersamplePixels / cssPixels);
   return Math.max(1, Math.min(window.devicePixelRatio || 1, preset.dpr, budgetDpr));
 };
@@ -1141,6 +1174,7 @@ const createRenderGraph = (gpu, outputSize, bloomSize = resolveBloomSize(outputS
       post: postParams
     }
   });
+  // Disabled effects retain only tiny placeholders, not full-resolution render targets.
   const styleTarget = target(gpu, { size: [1, 1], format: 'rgba8unorm', label: 'aero-shards-style' });
   const asciiTarget = target(gpu, { size: [1, 1], format: 'rgba8unorm', label: 'aero-shards-ascii-cells' });
   const styleParams = uniforms(gpu, {
@@ -1204,26 +1238,25 @@ const configureStyle = (graph, settings, outputSize, cssSize) => {
 const prepareRenderGraph = async (graph, outputFormat) => {
   await Promise.all([
     graph.shardDraw.compile({ colors: [outputFormat] }),
-    graph.bloomEffect.compile({ colors: ['rgba16float'] }),
-    graph.bloomBlurX.compile({ colors: ['rgba16float'] }),
-    graph.bloomBlurY.compile({ colors: ['rgba16float'] }),
+    graph.shardDraw.compile(graph.sceneTarget),
+    graph.bloomEffect.compile(graph.bloomTarget),
+    graph.bloomBlurX.compile(graph.bloomScratchTarget),
+    graph.bloomBlurY.compile(graph.bloomTarget),
     graph.finishEffect.compile({ colors: [outputFormat] }),
-    graph.asciiEffect.compile({ colors: ['rgba8unorm'] }),
-    graph.styleEffect.compile({ colors: [outputFormat] })
+    graph.asciiEffect.compile(graph.asciiTarget),
+    graph.styleEffect.compile(graph.styleTarget)
   ]);
 };
 
-export function AeroShards({
+export default function AeroShards({
   backgroundColor = '#120F17',
   shardColor = '#896ABD',
   accentColor = '#A855F7',
   placement = 'full',
+  flow = 'stream',
   material = 'pearl',
   detail = 'balanced',
-  flow = 'stream',
-  rippleIntensity = 1,
-  holdToGather = true,
-  effect: effectProp = 'none',
+  effect = 'none',
   scale = 1,
   spread = 1,
   depth = 1,
@@ -1242,91 +1275,763 @@ export function AeroShards({
   transitionDuration = 1,
   interactionRadius = 1.5,
   interactionStrength = 0.5,
+  rippleIntensity = 1,
+  holdToGather = true,
   paused = false,
   className = '',
   onError
 }) {
-  const containerRef = useRef(null);
+  const rootRef = useRef(null);
   const canvasRef = useRef(null);
-  const [isReady, setIsReady] = useState(false);
-  const [webGpuSupported, setWebGpuSupported] = useState(true);
+  const onErrorRef = useRef(onError);
+  const settingsRef = useRef(null);
+  const wakeRef = useRef(() => {});
+  const pointerRef = useRef({
+    raw: [0.5, 0.5],
+    position: [0.5, 0.5],
+    velocity: [0, 0],
+    active: 0,
+    presence: 0,
+    presenceVelocity: 0,
+    initialized: false
+  });
+  const ripplesRef = useRef(createRipples());
+  const holdRef = useRef(createHold());
+  const [ready, setReady] = useState(false);
+
+  const resolvedMaterial = MATERIAL_PRESETS[material] || MATERIAL_PRESETS.pearl;
+  const resolvedDetail = DETAIL_PRESETS[detail] || DETAIL_PRESETS.balanced;
+  const resolvedEffect = EFFECTS[effect] ?? EFFECTS.none;
+  // Stylized marks need enough screen area to resolve; preserve roughly the same field coverage.
+  const effectDetail = resolvedEffect === EFFECTS.none ? 1 : 0.4;
+  const effectSize = resolvedEffect === EFFECTS.none ? 1 : 1.75;
+  const resolvedScale = clamp(scale, 0.5, 2.5);
+  const resolvedBackground = parseColor(backgroundColor, '#120F17');
+  const resolvedShardColor = parseColor(shardColor, '#896ABD');
+  const resolvedAccentColor = parseColor(accentColor, '#A855F7');
+  const resolvedSpread = clamp(spread, 0.15, 1.1);
+  const resolvedDepth = clamp(depth, 0, 1.25);
+  const resolvedSpeed = clamp(speed, 0, 2);
+  const resolvedSpin = clamp(spin, 0, 2);
+  const resolvedInteraction = INTERACTIONS[interaction] ?? INTERACTIONS.repel;
+  const resolvedDensity = clamp(density, 0.5, 1.5);
+  const resolvedShardSize = clamp(shardSize, 0.5, 1.5);
+  const resolvedStretch = clamp(stretch, 0.6, 1.8);
+  const resolvedTurbulence = clamp(turbulence, 0, 2);
+  const resolvedGlow = clamp(glow, 0, 2);
+  const resolvedEdgeSoftness = clamp(edgeSoftness, 0, 2);
+  const resolvedBloom = clamp(bloom, 0, 3);
+  const resolvedGrain = clamp(grain, 0, 0.12);
+  const resolvedChromaticAberration = clamp(chromaticAberration, 0, 0.01);
+  const resolvedTransitionDuration = clamp(transitionDuration, 0.2, 2);
+  const resolvedInteractionRadius = clamp(interactionRadius, 0.5, 2);
+  const resolvedInteractionStrength = clamp(interactionStrength, 0, 2);
+  const backgroundLuma =
+    resolvedBackground[0] * 0.2126 + resolvedBackground[1] * 0.7152 + resolvedBackground[2] * 0.0722;
+  const lightBackground = clamp((backgroundLuma - 0.58) / 0.24, 0, 1);
+  const lightSurface = lightBackground * lightBackground * (3 - 2 * lightBackground);
+
+  settingsRef.current = {
+    background: resolvedBackground,
+    shard: resolvedShardColor,
+    highlight: mixColor(resolvedAccentColor, [1, 1, 1, 1], resolvedMaterial.highlightMix),
+    accent: resolvedAccentColor,
+    composition: PLACEMENTS[placement] ?? PLACEMENTS.full,
+    flow: FLOWS[flow] ?? FLOWS.stream,
+    material: MATERIALS[material] ?? MATERIALS.pearl,
+    effect: resolvedEffect,
+    detailCount: resolvedDetail.count * resolvedDensity * effectDetail,
+    shardSize: resolvedDetail.size * resolvedShardSize * effectSize,
+    scale: resolvedScale,
+    stretch: resolvedStretch * (1 + Math.min(resolvedSpeed * 0.34, 1.2) * 0.1),
+    speed: resolvedSpeed,
+    spin: resolvedSpin,
+    turbulence: 0.36 * resolvedTurbulence,
+    spread: resolvedSpread,
+    depth: resolvedDepth,
+    roughness: resolvedMaterial.roughness,
+    brightness: resolvedMaterial.brightness,
+    glow: resolvedMaterial.glow * resolvedGlow,
+    edgeSoftness: resolvedEdgeSoftness,
+    bloom: resolvedBloom,
+    grain: resolvedGrain,
+    // Keep RGB separation below the scale of the glyph strokes and dither screen.
+    chromaticAberration: resolvedChromaticAberration * (resolvedEffect === EFFECTS.none ? 1 : 0.2),
+    exposure: 1.12 + (0.96 - 1.12) * lightSurface,
+    lightSurface,
+    transitionDuration: resolvedTransitionDuration,
+    interaction: resolvedInteraction,
+    interactionRadius: (interaction === 'attract' ? 0.27 : 0.18) * resolvedInteractionRadius,
+    interactionStrength: resolvedInteractionStrength,
+    rippleIntensity: clamp(rippleIntensity, 0, 2),
+    holdToGather,
+    paused,
+    signature: [
+      backgroundColor,
+      shardColor,
+      accentColor,
+      placement,
+      flow,
+      material,
+      detail,
+      effect,
+      resolvedScale,
+      resolvedSpread,
+      resolvedDepth,
+      resolvedSpeed,
+      resolvedSpin,
+      interaction,
+      resolvedDensity,
+      resolvedShardSize,
+      resolvedStretch,
+      resolvedTurbulence,
+      resolvedGlow,
+      resolvedEdgeSoftness,
+      resolvedBloom,
+      resolvedGrain,
+      resolvedChromaticAberration,
+      resolvedTransitionDuration,
+      resolvedInteractionRadius,
+      resolvedInteractionStrength,
+      rippleIntensity,
+      holdToGather,
+      paused
+    ].join('|')
+  };
+  const settingsSignature = settingsRef.current.signature;
+  onErrorRef.current = onError;
 
   useEffect(() => {
-    // Exact WebGPU capability check
-    if (typeof navigator === 'undefined' || !navigator.gpu) {
-      console.warn('[ReactBits AeroShards] WebGPU (navigator.gpu) is not supported on this browser/device.');
-      setWebGpuSupported(false);
-      if (onError) onError(new Error('WebGPU is not supported'));
-      return;
-    }
+    wakeRef.current();
+  }, [settingsSignature]);
 
-    const container = containerRef.current;
+  useEffect(() => {
     const canvas = canvasRef.current;
-    if (!container || !canvas) return;
+    const root = rootRef.current;
+    if (!canvas || !root) return;
+    resetPointerMotion(pointerRef.current);
+    ripplesRef.current = createRipples();
+    holdRef.current = createHold();
 
-    let destroyed = false;
-    let gpu = null;
-    let graph = null;
+    let disposed = false;
+    let runtimeFailed = false;
+    let gpu;
+    let animationFrameId = 0;
+    let timeoutId = 0;
+    let unsubscribeResize;
+    let unsubscribeGpuError;
+    let visibilityObserver;
+    let resizeObserver;
+    let visible = true;
+    let visibilityRatio = 1;
+    let needsRender = true;
+    let interactionDeadline = 0;
+    let settlingDeadline = 0;
+    let bounds = root.getBoundingClientRect();
+    let boundsDirty = false;
+    let resumePending = true;
+    let wakeRenderer = () => {
+      needsRender = true;
+    };
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    const startWebGpuPipeline = async () => {
+    const reportFailure = error => {
+      if (disposed || runtimeFailed) return;
+      runtimeFailed = true;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      resizeObserver?.disconnect();
+      visibilityObserver?.disconnect();
+      unsubscribeResize?.();
+      unsubscribeGpuError?.();
+      const failedGpu = gpu;
+      gpu = undefined;
+      failedGpu?.dispose();
+      const resolved = error instanceof Error ? error : new Error(String(error));
+      onErrorRef.current?.(resolved);
+    };
+
+    const updateBounds = () => {
+      bounds = root.getBoundingClientRect();
+      boundsDirty = false;
+    };
+
+    const pointFromClient = (clientX, clientY) => {
+      if (boundsDirty) updateBounds();
+      if (bounds.width <= 0 || bounds.height <= 0) return null;
+      const x = (clientX - bounds.left) / bounds.width;
+      const y = (clientY - bounds.top) / bounds.height;
+      if (x < 0 || x > 1 || y < 0 || y > 1) return null;
+      return [x, y];
+    };
+
+    const updatePointerTarget = next => {
+      const pointer = pointerRef.current;
+      if (!pointer.initialized || (!pointer.active && pointer.presence === 0)) {
+        pointer.raw = [...next];
+        pointer.position = [...next];
+        pointer.presence = 0;
+        resetPointerMotion(pointer);
+        pointer.initialized = true;
+      } else {
+        pointer.raw[0] = next[0];
+        pointer.raw[1] = next[1];
+      }
+      pointer.active = 1;
+    };
+
+    const deactivatePointer = () => {
+      pointerRef.current.active = 0;
+      holdRef.current.pointerId = null;
+      const now = performance.now();
+      interactionDeadline = now + 140;
+      settlingDeadline = now + 680;
+      wakeRenderer();
+    };
+
+    const handlePointerMove = event => {
+      const settings = settingsRef.current;
+      if (!event.isPrimary || !visible || settings.interaction === INTERACTIONS.none) return;
+      const next = pointFromClient(event.clientX, event.clientY);
+      if (!next) {
+        const pointer = pointerRef.current;
+        if (pointer.active || pointer.presence > 0) deactivatePointer();
+        return;
+      }
+      updatePointerTarget(next);
+      const now = performance.now();
+      interactionDeadline = now + 140;
+      settlingDeadline = now + 680;
+      wakeRenderer();
+    };
+
+    const handlePointerDown = event => {
+      const settings = settingsRef.current;
+      if (!event.isPrimary || event.button !== 0 || !visible || settings.interaction === INTERACTIONS.none) return;
+      // Never hijack links, form controls, or editable content layered above a background.
+      if (
+        event.target instanceof Element &&
+        event.target.closest('a, button, input, textarea, select, [role="button"], [contenteditable="true"]')
+      )
+        return;
+      const next = pointFromClient(event.clientX, event.clientY);
+      if (!next) return;
+      if (!settings.paused && !reduceMotion.matches && settings.speed > 0.0001) {
+        startRipple(ripplesRef.current, next, bounds.width / Math.max(bounds.height, 1));
+        if (settings.holdToGather) {
+          holdRef.current.pointerId = event.pointerId;
+          holdRef.current.elapsed = 0;
+        }
+      }
+      updatePointerTarget(next);
+      const now = performance.now();
+      interactionDeadline = now + 220;
+      settlingDeadline = now + 800;
+      wakeRenderer();
+    };
+
+    const handlePointerEnd = event => {
+      const hold = holdRef.current;
+      if (hold.pointerId === event.pointerId) {
+        hold.pointerId = null;
+        const settings = settingsRef.current;
+        if (
+          hold.amount > 0.1 &&
+          !settings.paused &&
+          !reduceMotion.matches &&
+          settings.interaction !== INTERACTIONS.none
+        ) {
+          startRipple(
+            ripplesRef.current,
+            pointerRef.current.raw,
+            bounds.width / Math.max(bounds.height, 1),
+            1 + hold.amount * 0.8
+          );
+        }
+        wakeRenderer();
+      }
+      if (event.pointerType !== 'mouse') deactivatePointer();
+    };
+
+    const markBoundsDirty = () => {
+      boundsDirty = true;
+    };
+
+    const handleVisibilityChange = () => {
+      resumePending = true;
+      holdRef.current.pointerId = null;
+      resetPointerMotion(pointerRef.current);
+      wakeRenderer();
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerdown', handlePointerDown, { passive: true });
+    window.addEventListener('pointerup', handlePointerEnd, { passive: true });
+    window.addEventListener('pointercancel', deactivatePointer, { passive: true });
+    window.addEventListener('blur', deactivatePointer);
+    window.addEventListener('scroll', markBoundsDirty, { passive: true, capture: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+    reduceMotion.addEventListener('change', handleVisibilityChange);
+
+    visibilityObserver = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        visibilityRatio = entry?.intersectionRatio ?? 1;
+        visible = entry ? entry.isIntersecting && visibilityRatio >= 0.02 : true;
+        if (visible) {
+          resumePending = true;
+        } else {
+          interactionDeadline = 0;
+          settlingDeadline = 0;
+          const pointer = pointerRef.current;
+          pointer.active = 0;
+          pointer.presence = 0;
+          holdRef.current.pointerId = null;
+          resetPointerMotion(pointer);
+        }
+        wakeRenderer();
+      },
+      { threshold: [0, 0.02, 0.25] }
+    );
+    visibilityObserver.observe(root);
+
+    void (async () => {
       try {
-        gpu = await init(canvas);
-        if (destroyed || !gpu) return;
+        setReady(false);
+        const resolvedQuality = resolveQuality(canvas);
+        const preset = QUALITY_PRESETS[resolvedQuality] || QUALITY_PRESETS.medium;
+        gpu = await init({ powerPreference: 'low-power' });
+        if (disposed) return gpu.dispose();
+        unsubscribeGpuError = gpu.onError(reportFailure);
 
-        const width = container.clientWidth || 800;
-        const height = container.clientHeight || 600;
+        const outputFormat = navigator.gpu.getPreferredCanvasFormat();
+        const output = surface(gpu, canvas, {
+          dpr: resolveDpr(preset, canvas),
+          autoResize: false,
+          format: outputFormat
+        });
+        const graph = createRenderGraph(gpu, output.size, resolveBloomSize([canvas.clientWidth, canvas.clientHeight]));
+        await prepareRenderGraph(graph, outputFormat);
+        if (disposed) return;
 
-        graph = createRenderGraph(gpu, [width, height]);
-        await prepareRenderGraph(graph, 'rgba8unorm');
+        let lastSettingsSignature = '';
+        let previousRenderTimestamp = 0;
+        let lastPresentationTimestamp = 0;
+        let nextPresentationTimestamp = 0;
+        let flowDistance = 0;
+        let travelPhase = 0;
+        let grainTime = 0;
+        let firstFrame = true;
+        const placementMotion = createFormation(settingsRef.current.composition);
+        let layoutWeights = placementMotion.weights;
+        let layoutTransitioning = false;
+        const formation = createFormation(settingsRef.current.flow);
+        let renderScale = settingsRef.current.scale;
+        let runtimeQualityLevel = 0;
+        let appliedBloomLevel = 0;
+        let pendingBloomResize = false;
+        let pressureStartedAt = 0;
+        let stableStartedAt = performance.now();
+        let lastQualityChange = 0;
+        let encodeAverage = 0;
+        let renderTimestamp = 0;
+        let previousRafTimestamp = 0;
+        let refreshInterval = 1000 / 60;
+        const refreshSamples = new Float32Array(30);
+        let refreshSampleCount = 0;
+        let refreshSampleIndex = 0;
 
-        if (destroyed) return;
-        setIsReady(true);
-
-        const renderLoop = (time) => {
-          if (destroyed || paused) return;
-          if (gpu && graph) {
-            frame(gpu, () => {
-              // WebGPU native frame draw
-            });
+        const resolveFrameState = now => {
+          const pointer = pointerRef.current;
+          const pointerTransitioning = Math.abs(pointer.presence - pointer.active) > 0.004;
+          if (
+            now < interactionDeadline ||
+            pointerTransitioning ||
+            ripplesRef.current.some(ripple => ripple.strength > 0) ||
+            layoutTransitioning ||
+            holdRef.current.pointerId !== null ||
+            holdRef.current.amount > 0 ||
+            formation.weights[settingsRef.current.flow] < 1 ||
+            Math.abs(settingsRef.current.scale - renderScale) > 0.001
+          ) {
+            return FRAME_STATES.interactive;
           }
-          requestAnimationFrame(renderLoop);
+          if (now < settlingDeadline) return FRAME_STATES.settling;
+          if (visibilityRatio < 0.25) return FRAME_STATES.partial;
+          return FRAME_STATES.ambient;
         };
 
-        requestAnimationFrame(renderLoop);
-      } catch (err) {
-        console.warn('[ReactBits AeroShards] WebGPU pipeline initialization failed:', err);
-        setWebGpuSupported(false);
-        if (onError) onError(err);
-      }
-    };
+        const resizePostTargets = (qualityLevel = appliedBloomLevel) => {
+          const width = Math.max(1, output.size[0]);
+          const height = Math.max(1, output.size[1]);
+          const bloomSize = resolveBloomSize([canvas.clientWidth, canvas.clientHeight], qualityLevel);
+          graph.sceneTarget.resize([width, height]);
+          graph.bloomTarget.resize(bloomSize);
+          graph.bloomScratchTarget.resize(bloomSize);
+          graph.blurParamsX.set({ direction: [1 / bloomSize[0], 0, 0, 0] });
+          graph.blurParamsY.set({ direction: [0, 1 / bloomSize[1], 0, 0] });
+          graph.postParams.set({
+            viewport: [width, height, 1 / width, 1 / height],
+            bloomInfo: [1 / bloomSize[0], 1 / bloomSize[1], 0.2, 0.12]
+          });
+        };
 
-    startWebGpuPipeline();
+        const resizeOutput = () => {
+          updateBounds();
+          const dpr = resolveDpr(preset, canvas);
+          const nextSize = [
+            Math.max(1, Math.round(canvas.clientWidth * dpr)),
+            Math.max(1, Math.round(canvas.clientHeight * dpr))
+          ];
+          if (nextSize[0] !== output.size[0] || nextSize[1] !== output.size[1]) output.resize(nextSize);
+          resizePostTargets();
+        };
+
+        unsubscribeResize = output.onResize(() => {
+          resizePostTargets();
+          needsRender = true;
+          wakeRenderer();
+        });
+        resizeObserver = new ResizeObserver(() => {
+          resizeOutput();
+          wakeRenderer();
+        });
+        resizeObserver.observe(canvas);
+
+        const setRuntimeQuality = (nextLevel, now, frameState) => {
+          const clampedLevel = Math.max(0, Math.min(RUNTIME_QUALITY.length - 1, nextLevel));
+          if (clampedLevel === runtimeQualityLevel) return;
+          runtimeQualityLevel = clampedLevel;
+          pressureStartedAt = 0;
+          stableStartedAt = now;
+          lastQualityChange = now;
+          if (frameState === FRAME_STATES.interactive || frameState === FRAME_STATES.settling) {
+            pendingBloomResize = true;
+          } else {
+            appliedBloomLevel = runtimeQualityLevel;
+            pendingBloomResize = false;
+            resizePostTargets();
+          }
+        };
+
+        const renderFrame = currentFrame => {
+          const settings = settingsRef.current;
+          const frozen = settings.paused || reduceMotion.matches || settings.speed <= 0.0001;
+          const elapsed =
+            resumePending || !previousRenderTimestamp
+              ? 0
+              : Math.min(0.05, Math.max(0, (renderTimestamp - previousRenderTimestamp) / 1000));
+          resumePending = false;
+          previousRenderTimestamp = renderTimestamp;
+          lastSettingsSignature = settings.signature;
+          needsRender = false;
+
+          if (!frozen) {
+            flowDistance += elapsed * settings.speed * 0.34;
+            grainTime += elapsed;
+          }
+          if (frozen) {
+            renderScale = settings.scale;
+          } else {
+            renderScale += (settings.scale - renderScale) * (1 - Math.exp(-elapsed * 12));
+          }
+
+          advanceFormation(placementMotion, settings.composition, elapsed, settings.transitionDuration, frozen);
+          layoutWeights = placementMotion.weights;
+          layoutTransitioning = layoutWeights[settings.composition] !== 1;
+          if (!frozen) {
+            const travelAspect = output.size[0] / Math.max(output.size[1], 1);
+            travelPhase =
+              (travelPhase + (elapsed * settings.speed * 0.34) / resolvePathLength(travelAspect, layoutWeights)) % 1;
+          }
+
+          const pointer = pointerRef.current;
+          advanceFormation(formation, settings.flow, elapsed, settings.transitionDuration, frozen);
+          advanceHold(
+            holdRef.current,
+            elapsed,
+            frozen || !settings.holdToGather || settings.interaction === INTERACTIONS.none
+          );
+          if (settings.interaction === INTERACTIONS.none) {
+            pointer.active = 0;
+            pointer.presence = 0;
+            resetPointerMotion(pointer);
+          } else if (frozen) {
+            pointer.position = [...pointer.raw];
+            pointer.presence = pointer.active;
+            resetPointerMotion(pointer);
+          } else if (pointer.initialized) {
+            advancePointer(pointer, elapsed);
+          }
+
+          advanceRipples(ripplesRef.current, elapsed, frozen || settings.interaction === INTERACTIONS.none);
+
+          const runtimeQuality = RUNTIME_QUALITY[runtimeQualityLevel];
+          const activeCount = Math.max(
+            700,
+            Math.round(preset.count * settings.detailCount * runtimeQuality.countScale)
+          );
+          const densityCompensation = Math.pow(1 / runtimeQuality.countScale, 0.2);
+          const shardWorldSize = 0.0125 * settings.shardSize * densityCompensation;
+          const aspect = output.size[0] / Math.max(output.size[1], 1);
+          const lightPresence = settings.interaction === INTERACTIONS.none ? 0 : pointer.presence;
+          const pointerShiftX = (pointer.position[0] - 0.5) * 0.38 * lightPresence;
+          const pointerShiftY = (pointer.position[1] - 0.5) * -0.24 * lightPresence;
+          const lightX = -0.38 + pointerShiftX;
+          const lightY = 0.58 + pointerShiftY;
+          const lightLength = Math.hypot(lightX, lightY, 1);
+          const interactionSign = settings.interaction === INTERACTIONS.attract ? 1 : -1;
+          const interactionPresence =
+            settings.interaction === INTERACTIONS.none
+              ? 0
+              : pointer.presence * settings.interactionStrength * interactionSign * (1 - holdRef.current.amount);
+          const pointerWorldX = ((pointer.position[0] * 2 - 1) * aspect) / renderScale;
+          const pointerWorldY = (1 - pointer.position[1] * 2) / renderScale;
+          const inverseScale = 1 / renderScale;
+          const rippleUniforms = ripplesRef.current.map(ripple => [
+            (ripple.origin[0] * 2 - 1) * aspect * inverseScale,
+            (1 - ripple.origin[1] * 2) * inverseScale,
+            ripple.age,
+            ripple.strength * settings.interactionStrength * settings.rippleIntensity * inverseScale
+          ]);
+
+          graph.viewParams.set({
+            viewport: [aspect, shardWorldSize, renderScale, flowDistance],
+            shape: [settings.spread, settings.depth, settings.turbulence, pointerShiftY],
+            effects: [settings.spin, settings.edgeSoftness, settings.stretch, settings.exposure],
+            composition: layoutWeights,
+            transport: [travelPhase, Math.min(1, (1 - Math.max(...layoutWeights)) * 12), 0, 0],
+            formation: formation.weights,
+            gather: [pointerWorldX, pointerWorldY, holdRef.current.amount, holdRef.current.phase],
+            pointer: [
+              pointerWorldX,
+              pointerWorldY,
+              settings.interactionRadius * 2 * inverseScale,
+              interactionPresence * inverseScale
+            ],
+            shock: rippleUniforms[0],
+            shockB: rippleUniforms[1],
+            shockC: rippleUniforms[2],
+            shockD: rippleUniforms[3],
+            material: [settings.roughness, settings.material, settings.brightness, settings.glow],
+            light: [lightX / lightLength, lightY / lightLength, 1 / lightLength, pointerShiftX],
+            environment: [settings.lightSurface, 0, 0, 0],
+            baseColor: settings.shard,
+            highlightColor: settings.highlight,
+            accentColor: settings.accent
+          });
+          graph.postParams.set({
+            finishing: [settings.bloom, settings.grain, settings.chromaticAberration, settings.lightSurface],
+            background: settings.background,
+            tint: mixColor(settings.shard, settings.accent, 0.4),
+            temporal: [grainTime, 0, 0, 0]
+          });
+
+          configureStyle(graph, settings, output.size, [canvas.clientWidth, canvas.clientHeight]);
+
+          const postEnabled =
+            settings.effect !== EFFECTS.none ||
+            settings.bloom > 0.0001 ||
+            settings.grain > 0.0001 ||
+            settings.chromaticAberration > 0.000001;
+
+          if (!postEnabled) {
+            currentFrame.pass({ target: output, clear: settings.background }, pass => {
+              pass.draw(graph.shardDraw, { instances: activeCount });
+            });
+          } else {
+            currentFrame.pass({ target: graph.sceneTarget, clear: settings.background }, pass => {
+              pass.draw(graph.shardDraw, { instances: activeCount });
+            });
+            if (settings.effect === EFFECTS.ascii) {
+              currentFrame.pass({ target: graph.asciiTarget, clear: [0, 0, 0, 0] }, pass => {
+                pass.draw(graph.asciiEffect);
+              });
+            }
+            if (settings.effect !== EFFECTS.none) {
+              currentFrame.pass({ target: graph.styleTarget, clear: settings.background }, pass => {
+                pass.draw(graph.styleEffect);
+              });
+            }
+            if (settings.bloom > 0.0001) {
+              currentFrame.pass({ target: graph.bloomTarget, clear: [0, 0, 0, 1] }, pass => {
+                pass.draw(graph.bloomEffect);
+              });
+              currentFrame.pass({ target: graph.bloomScratchTarget, clear: [0, 0, 0, 1] }, pass => {
+                pass.draw(graph.bloomBlurX);
+              });
+              currentFrame.pass({ target: graph.bloomTarget, clear: [0, 0, 0, 1] }, pass => {
+                pass.draw(graph.bloomBlurY);
+              });
+            }
+            currentFrame.pass({ target: output, clear: settings.background }, pass => {
+              pass.draw(graph.finishEffect);
+            });
+          }
+
+          if (firstFrame) {
+            firstFrame = false;
+            requestAnimationFrame(() => {
+              if (!disposed) setReady(true);
+            });
+          }
+        };
+
+        const scheduleRaf = () => {
+          if (disposed || runtimeFailed || animationFrameId || !visible || document.hidden) return;
+          animationFrameId = requestAnimationFrame(scheduleFrame);
+        };
+
+        const scheduleSleep = targetTimestamp => {
+          if (disposed || runtimeFailed || timeoutId || animationFrameId || !visible || document.hidden) return;
+          const delay = Math.max(0, targetTimestamp - performance.now() - 10);
+          timeoutId = window.setTimeout(() => {
+            timeoutId = 0;
+            scheduleRaf();
+          }, delay);
+        };
+
+        const scheduleFrame = timestamp => {
+          animationFrameId = 0;
+          if (disposed || runtimeFailed || !visible || document.hidden) return;
+
+          if (previousRafTimestamp) {
+            const refreshSample = timestamp - previousRafTimestamp;
+            if (refreshSample > 3 && refreshSample < 35) {
+              refreshSamples[refreshSampleIndex] = refreshSample;
+              refreshSampleIndex = (refreshSampleIndex + 1) % refreshSamples.length;
+              refreshSampleCount = Math.min(refreshSampleCount + 1, refreshSamples.length);
+              refreshInterval = refreshSamples[0];
+              for (let index = 1; index < refreshSampleCount; index += 1) {
+                refreshInterval = Math.min(refreshInterval, refreshSamples[index]);
+              }
+            }
+          }
+          previousRafTimestamp = timestamp;
+
+          const settings = settingsRef.current;
+          const settingsChanged = settings.signature !== lastSettingsSignature;
+          const frozen = settings.paused || reduceMotion.matches || settings.speed <= 0.0001;
+          if (frozen && !firstFrame && !settingsChanged && !needsRender) return;
+
+          const forceFrame = firstFrame || settingsChanged || !lastPresentationTimestamp;
+          const frameState = resolveFrameState(performance.now());
+          const presentationInterval = resolveFrameInterval(frameState, refreshInterval);
+          const cadenceDeadline = lastPresentationTimestamp + presentationInterval;
+          const dueTimestamp = nextPresentationTimestamp
+            ? Math.min(nextPresentationTimestamp, cadenceDeadline)
+            : cadenceDeadline;
+          if (!forceFrame && timestamp < dueTimestamp - 0.5) {
+            if (frameState.continuous) scheduleRaf();
+            else scheduleSleep(dueTimestamp);
+            return;
+          }
+
+          if (pendingBloomResize && frameState !== FRAME_STATES.interactive && frameState !== FRAME_STATES.settling) {
+            appliedBloomLevel = runtimeQualityLevel;
+            pendingBloomResize = false;
+            resizePostTargets();
+          }
+
+          const sincePresentation = lastPresentationTimestamp ? timestamp - lastPresentationTimestamp : Infinity;
+          renderTimestamp = timestamp;
+          const encodeStart = performance.now();
+          try {
+            frame(gpu, renderFrame);
+          } catch (error) {
+            reportFailure(error);
+            return;
+          }
+          lastPresentationTimestamp = timestamp;
+
+          const monitorNow = performance.now();
+          const encodeDuration = monitorNow - encodeStart;
+          encodeAverage = encodeAverage ? encodeAverage * 0.9 + encodeDuration * 0.1 : encodeDuration;
+          const missedDeadline = Number.isFinite(sincePresentation) && sincePresentation > presentationInterval * 1.65;
+          const underPressure = encodeAverage > 4 || missedDeadline;
+
+          if (underPressure) {
+            if (!pressureStartedAt) pressureStartedAt = monitorNow;
+          } else {
+            pressureStartedAt = 0;
+          }
+          if (underPressure || frameState !== FRAME_STATES.ambient) stableStartedAt = monitorNow;
+
+          const sustainedPressure = pressureStartedAt > 0 && monitorNow - pressureStartedAt > 1800;
+          const qualityCooldownComplete = monitorNow - lastQualityChange > 2200;
+          if (runtimeQualityLevel < RUNTIME_QUALITY.length - 1 && qualityCooldownComplete && sustainedPressure) {
+            setRuntimeQuality(runtimeQualityLevel + 1, monitorNow, frameState);
+          } else if (
+            runtimeQualityLevel > 0 &&
+            frameState === FRAME_STATES.ambient &&
+            !underPressure &&
+            monitorNow - stableStartedAt > 15000 &&
+            monitorNow - lastQualityChange > 15000
+          ) {
+            setRuntimeQuality(runtimeQualityLevel - 1, monitorNow, frameState);
+          }
+
+          const nextState = resolveFrameState(performance.now());
+          // Carry fractional RAF deadlines so 90/144 Hz displays still average 60 fps.
+          nextPresentationTimestamp = advanceFrameDeadline(
+            timestamp,
+            dueTimestamp,
+            resolveFrameInterval(nextState, refreshInterval),
+            forceFrame || nextState.continuous !== frameState.continuous
+          );
+          if (frozen) return;
+          if (nextState.continuous) scheduleRaf();
+          else scheduleSleep(nextPresentationTimestamp);
+        };
+
+        wakeRenderer = () => {
+          needsRender = true;
+          if (!animationFrameId) nextPresentationTimestamp = 0;
+          if (timeoutId) {
+            window.clearTimeout(timeoutId);
+            timeoutId = 0;
+          }
+          scheduleRaf();
+        };
+        wakeRef.current = wakeRenderer;
+        wakeRenderer();
+      } catch (error) {
+        reportFailure(error);
+      }
+    })();
 
     return () => {
-      destroyed = true;
+      disposed = true;
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerEnd);
+      window.removeEventListener('pointercancel', deactivatePointer);
+      window.removeEventListener('blur', deactivatePointer);
+      window.removeEventListener('scroll', markBoundsDirty, true);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+      reduceMotion.removeEventListener('change', handleVisibilityChange);
+      visibilityObserver?.disconnect();
+      resizeObserver?.disconnect();
+      unsubscribeResize?.();
+      unsubscribeGpuError?.();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      wakeRef.current = () => {};
+      gpu?.dispose();
     };
-  }, [paused, onError]);
-
-  // Graceful Non-AeroShards Fallback when WebGPU is unavailable
-  if (!webGpuSupported) {
-    return (
-      <div
-        className={`aero-shards ${className}`}
-        style={{
-          background: 'radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.05) 0%, #000000 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-    );
-  }
+  }, []);
 
   return (
-    <div className={`aero-shards ${className}`} data-ready={isReady ? 'true' : 'false'}>
-      <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
-        <canvas ref={canvasRef} className="aero-shards__canvas" />
-      </div>
+    <div
+      ref={rootRef}
+      className={`aero-shards ${className}`}
+      data-ready={ready}
+      style={{ backgroundColor }}
+      aria-hidden="true"
+    >
+      <canvas ref={canvasRef} className="aero-shards__canvas" />
     </div>
   );
 }
-
-export default AeroShards;
