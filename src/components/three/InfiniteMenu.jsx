@@ -33,7 +33,7 @@ export function InfiniteMenu({ items = [] }) {
                 padding: '10px 20px',
                 borderRadius: '9999px',
                 background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                border: `1px solid ${isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}`,
+                border: `1px solid ${isActive ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.08)'}`,
                 color: isActive ? '#ffffff' : 'var(--text-muted)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.8125rem',
