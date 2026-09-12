@@ -5,6 +5,7 @@ import { HeroSection } from './components/sections/HeroSection';
 import { CurvedLoopSection } from './components/sections/CurvedLoopSection';
 import { AboutSection } from './components/sections/AboutSection';
 import { CapabilitiesSection } from './components/sections/CapabilitiesSection';
+import { SkillsSection } from './components/sections/SkillsSection';
 import { SelectedWorkSection } from './components/sections/SelectedWorkSection';
 import { MoreBuildsSection } from './components/sections/MoreBuildsSection';
 import { LabSection } from './components/sections/LabSection';
@@ -40,6 +41,7 @@ export function App() {
         <CurvedLoopSection />
         <AboutSection />
         <CapabilitiesSection />
+        <SkillsSection />
         <SelectedWorkSection />
         <MoreBuildsSection />
         <LabSection />

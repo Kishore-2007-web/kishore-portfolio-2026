@@ -52,12 +52,19 @@ export function AboutSection() {
           </div>
 
           {/* Right Column: Lanyard 3D Card Visual */}
-          <div>
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '480px',
+              minHeight: '380px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <WebGLErrorBoundary height="480px">
-              <Lanyard
-                position={[0, 0, 24]}
-                gravity={[0, -40, 0]}
-              />
+              <Lanyard position={[0, 0, 24]} gravity={[0, -40, 0]} />
             </WebGLErrorBoundary>
           </div>
         </div>
