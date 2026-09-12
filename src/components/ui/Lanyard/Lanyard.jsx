@@ -1,5 +1,4 @@
-/* eslint-disable react/no-unknown-property */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
@@ -50,20 +49,22 @@ export default function Lanyard({
       <Canvas
         camera={{ position: position, fov: fov }}
         dpr={[1, isMobile ? 1.5 : 2]}
-        gl={{ alpha: transparent }}
+        gl={{ alpha: transparent, antialias: true }}
         onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
       >
         <ambientLight intensity={Math.PI} />
-        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-          <Band
-            isMobile={isMobile}
-            frontImage={frontImage}
-            backImage={backImage}
-            imageFit={imageFit}
-            lanyardImage={lanyardImage}
-            lanyardWidth={lanyardWidth}
-          />
-        </Physics>
+        <Suspense fallback={null}>
+          <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+            <Band
+              isMobile={isMobile}
+              frontImage={frontImage}
+              backImage={backImage}
+              imageFit={imageFit}
+              lanyardImage={lanyardImage}
+              lanyardWidth={lanyardWidth}
+            />
+          </Physics>
+        </Suspense>
         <Environment blur={0.75}>
           <Lightformer
             intensity={2}
@@ -130,12 +131,14 @@ function Band({
   // Composite the front/back images into the card's texture atlas (front = left
   // half, back = right half). Each image is drawn aspect-preserving (no stretch).
   const cardMap = useMemo(() => {
-    const baseMap = materials.base.map;
+    const baseMap = materials?.base?.map;
+    if (!baseMap) return null;
     if (!frontImage && !backImage) return baseMap;
 
     const baseImg = baseMap.image;
-    const W = baseImg.width;
-    const H = baseImg.height;
+    if (!baseImg) return baseMap;
+    const W = baseImg.width || 1024;
+    const H = baseImg.height || 1024;
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
