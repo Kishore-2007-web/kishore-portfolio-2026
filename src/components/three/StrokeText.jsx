@@ -94,21 +94,25 @@ export function StrokeText({
       ref={containerRef}
       className={`stroke-text-container ${className}`}
       style={{
-        width: '100%',
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '2.5rem 1rem',
+        padding: '1.5rem 0',
         overflow: 'hidden',
         background: '#000000'
       }}
     >
       <svg
-        viewBox="0 0 1400 220"
+        viewBox="0 0 1440 200"
         preserveAspectRatio="xMidYMid meet"
         style={{
-          width: '100%',
-          maxWidth: '1200px',
+          width: '100vw',
           height: 'auto',
           display: 'block',
           overflow: 'visible'
