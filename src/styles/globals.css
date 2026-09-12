@@ -1,0 +1,225 @@
+/* ==========================================================================
+   KISHORE — CINEMATIC DIGITAL LABORATORY PORTFOLIO
+   Global CSS & Design System Tokens
+   ========================================================================== */
+
+:root {
+  /* Color System */
+  --bg: #000000;
+  --bg-subtle: #030303;
+  --bg-card: #050505;
+
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-active: rgba(255, 255, 255, 0.09);
+
+  --border: rgba(255, 255, 255, 0.10);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --border-focus: rgba(255, 255, 255, 0.35);
+
+  --text: #ffffff;
+  --text-primary: #f5f5f5;
+  --text-secondary: #d0d0d0;
+  --text-muted: #777777;
+  --text-dim: #444444;
+
+  /* Subtle Accent Colors (Restrained Shaders/Indicators Only) */
+  --accent-cyan: rgba(0, 229, 255, 0.7);
+  --accent-blue: rgba(64, 156, 255, 0.7);
+  --accent-violet: rgba(168, 85, 247, 0.6);
+
+  /* Typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Layout Boundaries */
+  --max-width: 1280px;
+  --header-height: 72px;
+}
+
+/* Reset & Base Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Glassmorphism System */
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+  border-radius: 16px;
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+/* Button & Links Primitives */
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--border-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button-primary {
+  background: rgba(255, 255, 255, 0.95);
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 1);
+  font-weight: 600;
+}
+
+.glass-button-primary:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+}
+
+/* Editorial Typography */
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-tag::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.section-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.7;
+}
+
+/* Container Utility */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+/* Focus Visible for Accessibility */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 3px;
+}
+
+/* Reduced Motion Utility Override */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
