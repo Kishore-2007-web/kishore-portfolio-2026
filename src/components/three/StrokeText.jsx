@@ -12,7 +12,7 @@ export function StrokeText({
   ease = "power2.out",
   trigger = "mount",
   fillMode = "wipe",
-  fontSize = 128,
+  fontSize = 100,
   fontWeight = 800,
   letterSpacing = -4,
   loop = true,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { siteConfig } from '../../data/site';
-import { Lanyard } from '../three/Lanyard';
+import Lanyard from '../ui/Lanyard/Lanyard';
 import { StrokeText } from '../three/StrokeText';
 import { GlassPanel } from '../ui/GlassPanel';
 import { WebGLErrorBoundary } from '../ui/WebGLErrorBoundary';
@@ -53,8 +53,11 @@ export function AboutSection() {
 
           {/* Right Column: Lanyard 3D Card Visual */}
           <div>
-            <WebGLErrorBoundary height="420px">
-              <Lanyard />
+            <WebGLErrorBoundary height="480px">
+              <Lanyard
+                position={[0, 0, 24]}
+                gravity={[0, -40, 0]}
+              />
             </WebGLErrorBoundary>
           </div>
         </div>
