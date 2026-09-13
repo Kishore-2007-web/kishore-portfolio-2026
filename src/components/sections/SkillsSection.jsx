@@ -92,7 +92,7 @@ export function SkillsSection() {
         >
           <InfiniteSpiral
             items={skillItems}
-            animationMode="all"
+            animationMode="auto"
             speed={0.8}
             radius={180}
             cardWidth={120}
