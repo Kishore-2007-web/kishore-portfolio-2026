@@ -480,6 +480,9 @@ class App {
     this.scroll.target = this.scroll.position + distance;
   }
   onTouchUp(e) {
+    if (!this.isDown) return;
+    this.isDown = false;
+
     const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
     const endY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
     const dist = Math.hypot(endX - (this.startPos.x || endX), endY - (this.startPos.y || endY));
@@ -504,7 +507,6 @@ class App {
       }
     }
 
-    this.isDown = false;
     this.onCheck();
   }
   onWheel(e) {
@@ -545,6 +547,7 @@ class App {
     this.scroll.target = this.scroll.target < 0 ? -item : item;
   }
   onResize() {
+    if (!this.container) return;
     this.screen = {
       width: this.container.clientWidth,
       height: this.container.clientHeight
@@ -585,16 +588,15 @@ class App {
     this.boundOnMouseLeave = () => { this.isHovered = false; };
 
     window.addEventListener('resize', this.boundOnResize);
-    window.addEventListener('mousewheel', this.boundOnWheel);
-    window.addEventListener('wheel', this.boundOnWheel);
-    window.addEventListener('mousedown', this.boundOnTouchDown);
     window.addEventListener('mousemove', this.boundOnTouchMove);
     window.addEventListener('mouseup', this.boundOnTouchUp);
-    window.addEventListener('touchstart', this.boundOnTouchDown);
-    window.addEventListener('touchmove', this.boundOnTouchMove);
+    window.addEventListener('touchmove', this.boundOnTouchMove, { passive: true });
     window.addEventListener('touchend', this.boundOnTouchUp);
 
     if (this.container) {
+      this.container.addEventListener('wheel', this.boundOnWheel, { passive: true });
+      this.container.addEventListener('mousedown', this.boundOnTouchDown);
+      this.container.addEventListener('touchstart', this.boundOnTouchDown, { passive: true });
       this.container.addEventListener('mouseenter', this.boundOnMouseEnter);
       this.container.addEventListener('mouseleave', this.boundOnMouseLeave);
       this.container.addEventListener('keydown', this.boundOnKeyDown);

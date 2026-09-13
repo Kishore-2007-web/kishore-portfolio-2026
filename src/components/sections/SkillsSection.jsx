@@ -20,6 +20,10 @@ import {
   Users,
   Sparkles,
   RefreshCw,
+  Figma,
+  Laptop,
+  Zap,
+  Palette,
 } from 'lucide-react';
 
 const skillItems = [
@@ -35,6 +39,10 @@ const skillItems = [
   { id: 'unreal', title: 'Unreal Engine', icon: <Gamepad2 size={34} strokeWidth={2} color="#ffffff" /> },
   { id: 'blender', title: 'Blender', icon: <Shapes size={34} strokeWidth={2} color="#ffffff" /> },
   { id: 'maya', title: 'Maya', icon: <Layers size={34} strokeWidth={2} color="#ffffff" /> },
+  { id: 'figma', title: 'Figma', icon: <Figma size={34} strokeWidth={2} color="#ffffff" /> },
+  { id: 'vscode', title: 'VS Code', icon: <Laptop size={34} strokeWidth={2} color="#ffffff" /> },
+  { id: 'antigravity', title: 'Antigravity', icon: <Zap size={34} strokeWidth={2} color="#ffffff" /> },
+  { id: 'canva', title: 'Canva', icon: <Palette size={34} strokeWidth={2} color="#ffffff" /> },
   { id: 'git', title: 'Git', icon: <GitBranch size={34} strokeWidth={2} color="#ffffff" /> },
   { id: 'github', title: 'GitHub', icon: <Github size={34} strokeWidth={2} color="#ffffff" /> },
   { id: 'problem-solving', title: 'Problem Solving', icon: <Puzzle size={34} strokeWidth={2} color="#ffffff" /> },
