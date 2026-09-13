@@ -31,8 +31,8 @@ export function GitHubSection() {
         <Galaxy
           mouseRepulsion={true}
           mouseInteraction={false}
-          density={3}
-          glowIntensity={0.6}
+          density={0.8}
+          glowIntensity={0.2}
           saturation={0}
           hueShift={0}
           repulsionStrength={6.5}

@@ -117,14 +117,14 @@ const SpecularButton = ({
 
     try {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true, dpr });
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: false, antialias: true, dpr });
       gl = renderer.gl;
 
       if (!gl) return;
 
       gl.clearColor(0, 0, 0, 0);
       gl.enable(gl.BLEND);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
       const geometry = new Triangle(gl);
       if (geometry.attributes.uv) delete geometry.attributes.uv;

@@ -22,7 +22,14 @@ export function GlassButton({
       target={target}
       rel={rel}
       className={className}
-      style={style}
+      style={{
+        background: isPrimary ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.05)',
+        border: isPrimary ? '1px solid rgba(255, 255, 255, 0.35)' : '1px solid rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        color: '#ffffff',
+        ...style
+      }}
       size={size}
       radius={9999}
       tint="#ffffff"
