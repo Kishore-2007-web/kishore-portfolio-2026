@@ -23,3 +23,5 @@ export function SelectedWorkSection() {
     </section>
   );
 }
+
+export default SelectedWorkSection;
