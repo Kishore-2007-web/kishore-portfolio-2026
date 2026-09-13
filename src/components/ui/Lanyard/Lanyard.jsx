@@ -233,7 +233,7 @@ function Band({
 
   return (
     <>
-      <group position={[0, 3.5, 0]}>
+      <group position={[0, 5.0, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
         <RigidBody position={[0, -1.0, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
@@ -248,7 +248,7 @@ function Band({
           <CuboidCollider args={[2.31, 3.25, 0.01]} />
           <group
             scale={6.5}
-            position={[0, -0.2, -0.05]}
+            position={[0, 0.7, -0.04]}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
             onPointerUp={e => (e.target.releasePointerCapture(e.pointerId), drag(false))}
