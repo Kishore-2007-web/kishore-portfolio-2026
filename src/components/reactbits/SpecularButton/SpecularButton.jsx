@@ -233,7 +233,8 @@ const SpecularButton = ({
         program.uniforms.uShineSize.value = (p.shineSize * Math.PI) / 180;
         program.uniforms.uShineFade.value = (p.shineFade * Math.PI) / 180;
         program.uniforms.uThickness.value = p.thickness * dpr;
-        renderer.render({ scene: mesh });
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        renderer.render({ scene: mesh, clear: true });
       };
       raf = requestAnimationFrame(update);
     } catch (err) {

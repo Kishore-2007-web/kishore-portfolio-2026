@@ -56,15 +56,15 @@ export function AboutSection() {
             style={{
               position: 'relative',
               width: '100%',
-              height: '560px',
-              minHeight: '450px',
+              height: '520px',
+              minHeight: '420px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <WebGLErrorBoundary height="560px">
-              <Lanyard position={[0, 0, 30]} gravity={[0, -40, 0]} />
+            <WebGLErrorBoundary height="520px">
+              <Lanyard position={[0, 0, 19]} fov={18} gravity={[0, -40, 0]} />
             </WebGLErrorBoundary>
           </div>
         </div>

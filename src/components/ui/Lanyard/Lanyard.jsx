@@ -9,6 +9,7 @@ import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import cardGLB from '../../../assets/lanyard/card.glb';
 import lanyard from '../../../assets/lanyard/lanyard.png';
 import cardPNG from '../../../assets/lanyard/card.png';
+import photoJPG from '../../../assets/lanyard/photo.jpg';
 
 import * as THREE from 'three';
 import './Lanyard.css';
@@ -32,8 +33,8 @@ export default function Lanyard({
   gravity = [0, -40, 0],
   fov = 20,
   transparent = true,
-  frontImage = cardPNG,
-  backImage = cardPNG,
+  frontImage = photoJPG,
+  backImage = photoJPG,
   imageFit = 'cover',
   lanyardImage = lanyard,
   lanyardWidth = 2.5
@@ -106,8 +107,8 @@ function Band({
   maxSpeed = 50,
   minSpeed = 0,
   isMobile = false,
-  frontImage = cardPNG,
-  backImage = cardPNG,
+  frontImage = photoJPG,
+  backImage = photoJPG,
   imageFit = 'cover',
   lanyardImage = lanyard,
   lanyardWidth = 2.5
@@ -130,24 +131,43 @@ function Band({
   const frontTex = useTexture(frontImage || BLANK_PIXEL);
   const backTex = useTexture(backImage || BLANK_PIXEL);
 
+  const [textureLoaded, setTextureLoaded] = useState(0);
+
+  useEffect(() => {
+    const img = frontTex?.image;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) {
+      setTextureLoaded(v => v + 1);
+    } else {
+      const handleLoad = () => setTextureLoaded(v => v + 1);
+      img.addEventListener('load', handleLoad);
+      return () => img.removeEventListener('load', handleLoad);
+    }
+  }, [frontTex, frontImage]);
+
   // Composite the front/back images into the card's texture atlas (front = left
   // half, back = right half). Each image is drawn aspect-preserving (no stretch).
   const cardMap = useMemo(() => {
     const baseMap = materials.base.map;
-    if (!frontImage && !backImage) return baseMap;
-
-    const baseImg = baseMap.image;
-    const W = baseImg.width;
-    const H = baseImg.height;
+    const baseImg = baseMap?.image;
+    const W = (baseImg && baseImg.width) || 1024;
+    const H = (baseImg && baseImg.height) || 1440;
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext('2d');
     if (!ctx) return baseMap;
-    // Keep the original baked atlas for the card edges and any untouched face.
-    ctx.drawImage(baseImg, 0, 0, W, H);
+
+    // Dark sleek background fill (prevents white canvas fallback)
+    ctx.fillStyle = '#0a0a0d';
+    ctx.fillRect(0, 0, W, H);
+
+    if (baseImg && baseImg.width > 0) {
+      ctx.drawImage(baseImg, 0, 0, W, H);
+    }
 
     const drawFitted = (img, rect) => {
+      if (!img || !img.width) return;
       const rx = rect.x * W;
       const ry = rect.y * H;
       const rw = rect.w * W;
@@ -166,16 +186,56 @@ function Band({
       ctx.restore();
     };
 
-    if (frontImage && frontTex.image) drawFitted(frontTex.image, FRONT_UV_RECT);
-    if (backImage && backTex.image) drawFitted(backTex.image, BACK_UV_RECT);
+    if (frontImage && frontTex.image && frontTex.image.width > 0) {
+      drawFitted(frontTex.image, FRONT_UV_RECT);
+
+      // Tech ID badge overlay on front face
+      const rx = FRONT_UV_RECT.x * W;
+      const ry = FRONT_UV_RECT.y * H;
+      const rw = FRONT_UV_RECT.w * W;
+      const rh = FRONT_UV_RECT.h * H;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(rx, ry, rw, rh);
+      ctx.clip();
+
+      // Bottom gradient
+      const botGrad = ctx.createLinearGradient(rx, ry + rh * 0.65, rx, ry + rh);
+      botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      botGrad.addColorStop(0.5, 'rgba(0,0,0,0.75)');
+      botGrad.addColorStop(1, 'rgba(0,0,0,0.95)');
+      ctx.fillStyle = botGrad;
+      ctx.fillRect(rx, ry + rh * 0.65, rw, rh * 0.35);
+
+      // Top gradient
+      const topGrad = ctx.createLinearGradient(rx, ry, rx, ry + rh * 0.15);
+      topGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
+      topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = topGrad;
+      ctx.fillRect(rx, ry, rw, rh * 0.15);
+
+      // Text: KISHORE
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '900 ' + Math.round(rw * 0.08) + 'px sans-serif';
+      ctx.fillText('KISHORE', rx + rw * 0.08, ry + rh * 0.88);
+
+      // Subtitle
+      ctx.fillStyle = '#00E5FF';
+      ctx.font = '600 ' + Math.round(rw * 0.045) + 'px sans-serif';
+      ctx.fillText('CREATIVE TECH LAB', rx + rw * 0.08, ry + rh * 0.93);
+
+      ctx.restore();
+    }
+    if (backImage && backTex.image && backTex.image.width > 0) drawFitted(backTex.image, BACK_UV_RECT);
 
     const composite = new THREE.CanvasTexture(canvas);
     composite.colorSpace = THREE.SRGBColorSpace;
-    composite.flipY = baseMap.flipY;
+    composite.flipY = baseMap ? baseMap.flipY : true;
     composite.anisotropy = 16;
     composite.needsUpdate = true;
     return composite;
-  }, [frontImage, backImage, imageFit, frontTex, backTex, materials.base.map]);
+  }, [frontImage, backImage, imageFit, frontTex, backTex, materials.base.map, textureLoaded]);
   const [curve] = useState(
     () =>
       new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()])
@@ -183,12 +243,12 @@ function Band({
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1.8]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1.8]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1.8]);
+  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1.0]);
+  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1.0]);
+  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1.0]);
   useSphericalJoint(j3, card, [
     [0, 0, 0],
-    [0, 4.33, 0]
+    [0, 2.53, 0]
   ]);
 
   useEffect(() => {
@@ -233,22 +293,22 @@ function Band({
 
   return (
     <>
-      <group position={[0, 5.0, 0]}>
+      <group position={[0, 2.2, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody position={[0, -1.0, 0]} ref={j1} {...segmentProps}>
+        <RigidBody position={[0, -0.5, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -2.0, 0]} ref={j2} {...segmentProps}>
+        <RigidBody position={[0, -1.0, 0]} ref={j2} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -3.0, 0]} ref={j3} {...segmentProps}>
+        <RigidBody position={[0, -1.5, 0]} ref={j3} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -7.33, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
-          <CuboidCollider args={[2.31, 3.25, 0.01]} />
+        <RigidBody position={[0, -4.03, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
+          <CuboidCollider args={[1.35, 1.9, 0.01]} />
           <group
-            scale={6.5}
-            position={[0, 0.7, -0.04]}
+            scale={5.0}
+            position={[0, 0.5, -0.05]}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
             onPointerUp={e => (e.target.releasePointerCapture(e.pointerId), drag(false))}
