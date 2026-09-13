@@ -90,3 +90,5 @@ export const labItems = [
     live: null
   }
 ];
+
+export default labItems;

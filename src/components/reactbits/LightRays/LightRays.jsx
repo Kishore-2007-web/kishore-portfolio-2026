@@ -31,7 +31,7 @@ const getAnchorAndDir = (origin, w, h) => {
   }
 };
 
-const LightRays = ({
+export const LightRays = ({
   raysOrigin = 'top-center',
   raysColor = DEFAULT_COLOR,
   raysSpeed = 1,

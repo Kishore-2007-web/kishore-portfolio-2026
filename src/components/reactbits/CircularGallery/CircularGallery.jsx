@@ -623,7 +623,7 @@ class App {
   }
 }
 
-export default function CircularGallery({
+export function CircularGallery({
   items,
   bend = 3,
   textColor = '#ffffff',
@@ -672,3 +672,5 @@ export default function CircularGallery({
     />
   );
 }
+
+export default CircularGallery;

@@ -20,7 +20,7 @@ export function ContactSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Background Volumetric LightRays Layer (Full Brightness) */}
+      {/* Background Volumetric LightRays Layer (Full Brightness White) */}
       <div
         className="contact-rays"
         style={{

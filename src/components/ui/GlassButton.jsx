@@ -29,8 +29,8 @@ export function GlassButton({
       tintOpacity={isPrimary ? 0.12 : 0.04}
       blur={12}
       textColor="#ffffff"
-      lineColor={isPrimary ? '#67e8f9' : '#ffffff'}
-      baseColor={isPrimary ? '#38bdf8' : '#525252'}
+      lineColor="#ffffff"
+      baseColor={isPrimary ? '#aaaaaa' : '#525252'}
       intensity={isPrimary ? 1.4 : 1.0}
       shineSize={isPrimary ? 20 : 12}
       shineFade={35}
