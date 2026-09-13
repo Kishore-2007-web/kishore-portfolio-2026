@@ -36,7 +36,7 @@ export default function Lanyard({
   backImage = cardPNG,
   imageFit = 'cover',
   lanyardImage = lanyard,
-  lanyardWidth = 1
+  lanyardWidth = 2.5
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -110,7 +110,7 @@ function Band({
   backImage = cardPNG,
   imageFit = 'cover',
   lanyardImage = lanyard,
-  lanyardWidth = 1
+  lanyardWidth = 2.5
 }) {
   const band = useRef(),
     fixed = useRef(),
@@ -183,12 +183,12 @@ function Band({
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
+  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1.8]);
+  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1.8]);
+  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1.8]);
   useSphericalJoint(j3, card, [
     [0, 0, 0],
-    [0, 1.5, 0]
+    [0, 4.33, 0]
   ]);
 
   useEffect(() => {
@@ -215,11 +215,13 @@ function Band({
           delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed))
         );
       });
-      curve.points[0].copy(j3.current.translation());
-      curve.points[1].copy(j2.current.lerped);
-      curve.points[2].copy(j1.current.lerped);
-      curve.points[3].copy(fixed.current.translation());
-      band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
+      if (band.current) {
+        curve.points[0].copy(j3.current.translation());
+        curve.points[1].copy(j2.current.lerped);
+        curve.points[2].copy(j1.current.lerped);
+        curve.points[3].copy(fixed.current.translation());
+        band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
+      }
       ang.copy(card.current.angvel());
       rot.copy(card.current.rotation());
       card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z });
@@ -231,22 +233,22 @@ function Band({
 
   return (
     <>
-      <group position={[0, 4, 0]}>
+      <group position={[0, 3.5, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody position={[0, -0.5, 0]} ref={j1} {...segmentProps}>
+        <RigidBody position={[0, -1.0, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -1.0, 0]} ref={j2} {...segmentProps}>
+        <RigidBody position={[0, -2.0, 0]} ref={j2} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -1.5, 0]} ref={j3} {...segmentProps}>
+        <RigidBody position={[0, -3.0, 0]} ref={j3} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -2.9, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
-          <CuboidCollider args={[0.8, 1.125, 0.01]} />
+        <RigidBody position={[0, -7.33, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
+          <CuboidCollider args={[2.31, 3.25, 0.01]} />
           <group
-            scale={2.25}
-            position={[0, -1.2, -0.05]}
+            scale={6.5}
+            position={[0, -0.2, -0.05]}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
             onPointerUp={e => (e.target.releasePointerCapture(e.pointerId), drag(false))}
@@ -270,18 +272,6 @@ function Band({
           </group>
         </RigidBody>
       </group>
-      <mesh ref={band}>
-        <meshLineGeometry />
-        <meshLineMaterial
-          color="white"
-          depthTest={false}
-          resolution={isMobile ? [1000, 2000] : [1000, 1000]}
-          useMap
-          map={texture}
-          repeat={[-4, 1]}
-          lineWidth={lanyardWidth}
-        />
-      </mesh>
     </>
   );
 }
