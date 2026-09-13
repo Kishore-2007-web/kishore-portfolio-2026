@@ -3,12 +3,18 @@ import { GlassPanel } from '../ui/GlassPanel';
 import { GlassButton } from '../ui/GlassButton';
 import { StatusPill } from '../ui/StatusPill';
 
-export function InfiniteMenu({ items = [] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectIndex }) {
+  const [internalIndex, setInternalIndex] = useState(0);
 
   if (!items || items.length === 0) return null;
 
-  const activeItem = items[activeIndex];
+  const activeIndex = externalIndex !== undefined ? externalIndex : internalIndex;
+  const activeItem = items[activeIndex] || items[0];
+
+  const handleSelect = (idx) => {
+    setInternalIndex(idx);
+    onSelectIndex?.(idx);
+  };
 
   return (
     <div style={{ width: '100%', margin: '2rem 0' }}>
@@ -28,7 +34,7 @@ export function InfiniteMenu({ items = [] }) {
           return (
             <button
               key={item.id || idx}
-              onClick={() => setActiveIndex(idx)}
+              onClick={() => handleSelect(idx)}
               style={{
                 padding: '10px 20px',
                 borderRadius: '9999px',
@@ -139,21 +145,31 @@ export function InfiniteMenu({ items = [] }) {
               justifyContent: 'center',
             }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px)',
-                backgroundSize: '16px 16px',
-                opacity: 0.3,
-              }}
-            />
-            <div style={{ textAlign: 'center', padding: '20px', zIndex: 1 }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.8 }}>⚡</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8125rem', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
-                {activeItem.category}
-              </div>
-            </div>
+            {activeItem.image ? (
+              <img
+                src={activeItem.image}
+                alt={activeItem.title}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '16px' }}
+              />
+            ) : (
+              <>
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px)',
+                    backgroundSize: '16px 16px',
+                    opacity: 0.3,
+                  }}
+                />
+                <div style={{ textAlign: 'center', padding: '20px', zIndex: 1 }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '8px', opacity: 0.8 }}>⚡</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8125rem', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+                    {activeItem.category}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </GlassPanel>

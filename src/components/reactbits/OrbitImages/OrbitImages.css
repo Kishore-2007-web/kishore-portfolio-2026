@@ -1,0 +1,74 @@
+.orbit-container {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: visible;
+}
+
+.orbit-scaling-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.orbit-scaling-container--responsive {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+}
+
+.orbit-rotation-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  position: relative;
+}
+
+.orbit-path-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.orbit-item {
+  position: absolute;
+  will-change: transform;
+  user-select: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  outline: none;
+}
+
+.orbit-item:hover,
+.orbit-item:focus-visible {
+  transform: scale(1.15) !important;
+  z-index: 20;
+}
+
+.orbit-item:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+.orbit-center-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.orbit-center-content > * {
+  pointer-events: auto;
+}
+
+.orbit-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}

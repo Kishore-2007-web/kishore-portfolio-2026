@@ -1,37 +1,37 @@
 export const featuredProjects = [
   {
-    id: "thachan",
-    title: "THACHAN",
-    category: "WEB / SOFTWARE",
-    description: "Carpenter manpower finding platform connecting skilled craftsmen with local project opportunities.",
-    technologies: ["React", "Node.js", "Web Architecture"],
-    status: "TEAM PROJECT",
-    statusType: "team",
-    github: "https://github.com/Kishore-2007-web/Carpenter-Manpower-Finder-THACHAN-",
-    live: null,
-    teamProject: true,
+    id: "kisa-ai",
+    title: "Kisa AI",
+    category: "AI Chatbot",
+    description: "Personal AI chatbot and conversational intelligence assistant engineered for fast, context-aware query resolution.",
+    technologies: ["React", "API Integration", "Node.js", "CSS Modules"],
+    status: "LIVE",
+    statusType: "live",
+    github: "https://github.com/Kishore-2007-web/AI-CHATBOT",
+    live: "https://kisa-ai.vercel.app",
+    teamProject: false,
     featured: true,
-    image: "/assets/images/projects/thachan.jpg"
+    image: "/assets/projects/kisa-ai.svg"
   },
   {
-    id: "crimenet-ai",
-    title: "CrimeNET AI",
-    category: "AI / FRONTEND PROTOTYPE",
-    description: "AI-driven crime analysis network interface and intelligence prototype for security insights.",
-    technologies: ["React", "Tailwind / CSS", "AI Interface"],
-    status: "PRIVATE REPOSITORY",
+    id: "thachan",
+    title: "THACHAN",
+    category: "Carpenter Manpower Finder",
+    description: "Digital ecosystem connecting skilled carpenter manpower with local construction & interior craftsmanship opportunities.",
+    technologies: ["React", "Node.js", "Web Architecture", "Database Design"],
+    status: "PRIVATE / IN DEV",
     statusType: "private",
     github: null,
     live: null,
     teamProject: true,
     featured: true,
-    image: "/assets/images/projects/crimenet.jpg"
+    image: "/assets/projects/thachan.svg"
   },
   {
     id: "calculatorhub",
     title: "CalculatorHub",
-    category: "WEB",
-    description: "All-in-one suite of specialized utility calculators engineered for maximum usability and quick operations.",
+    category: "300+ Calculator Platform",
+    description: "Large-scale web-based utility platform featuring over 300 specialized computational calculators for finance, engineering, and everyday math.",
     technologies: ["JavaScript", "HTML5", "CSS3", "Vercel"],
     status: "LIVE",
     statusType: "live",
@@ -39,25 +39,63 @@ export const featuredProjects = [
     live: "https://calculatorhub-gold.vercel.app/",
     teamProject: false,
     featured: true,
-    image: "/assets/images/projects/calculatorhub.jpg"
+    image: "/assets/projects/calculatorhub.svg"
   },
   {
-    id: "ai-chatbot",
-    title: "AI Chatbot",
-    category: "AI",
-    description: "Context-aware conversational assistant interface built with clean responsive UI and fast response flows.",
-    technologies: ["React", "API Integration", "CSS Modules"],
-    status: "IN DEVELOPMENT",
-    statusType: "dev",
-    github: "https://github.com/Kishore-2007-web/AI-CHATBOT",
+    id: "my-pocket-tracker",
+    title: "My Pocket Tracker",
+    category: "Finance Platform",
+    description: "Unified personal and business financial management utility for tracking daily expenses, budget limits, and revenue flows.",
+    technologies: ["React", "JavaScript", "LocalStorage API", "Chart Visualization"],
+    status: "LIVE",
+    statusType: "live",
+    github: "https://github.com/Kishore-2007-web/expence_tracker",
+    live: "https://my-pocket-tracker.vercel.app",
+    teamProject: false,
+    featured: true,
+    image: "/assets/projects/my-pocket-tracker.svg"
+  },
+  {
+    id: "the-room",
+    title: "The Room",
+    category: "Unreal Engine Horror Game",
+    description: "Single-player first-person psychological nightmare game built in Unreal Engine featuring immersive lighting, atmospheric audio, and puzzle mechanics.",
+    technologies: ["Unreal Engine", "C++", "3D Modeling", "Audio Design"],
+    status: "PRIVATE REPOSITORY",
+    statusType: "private",
+    github: null,
     live: null,
     teamProject: false,
     featured: true,
-    image: "/assets/images/projects/aichatbot.jpg"
+    image: "/assets/projects/the-room.svg"
+  },
+  {
+    id: "tamil-app",
+    title: "Tamil App",
+    category: "Tamil Learning / Heritage App",
+    description: "Regional mobile and web application dedicated to Tamil language learning, literary heritage, and interactive cultural modules.",
+    technologies: ["React Native", "JavaScript", "i18n", "Mobile UI"],
+    status: "PRIVATE REPOSITORY",
+    statusType: "private",
+    github: null,
+    live: null,
+    teamProject: false,
+    featured: true,
+    image: "/assets/projects/tamil-app.svg"
   }
 ];
 
 export const secondaryProjects = [
+  {
+    id: "crimenet-ai",
+    title: "CrimeNET AI",
+    category: "AI / FRONTEND PROTOTYPE",
+    description: "AI-driven crime analysis network interface and intelligence prototype for security insights.",
+    status: "PRIVATE REPOSITORY",
+    statusType: "private",
+    github: null,
+    live: null
+  },
   {
     id: "auto-git-pusher",
     title: "Auto Git Pusher",
@@ -77,26 +115,6 @@ export const secondaryProjects = [
     statusType: "live",
     github: "https://github.com/Kishore-2007-web/My-anime-list",
     live: "https://my-anime-list-dun.vercel.app/"
-  },
-  {
-    id: "expense-tracker",
-    title: "Your Pocket / Expense Tracker",
-    category: "SOFTWARE / UTILITY",
-    description: "Personal finance tracking utility for recording daily expenditure analytics and budget limits.",
-    status: "EXPERIMENT",
-    statusType: "experiment",
-    github: "https://github.com/Kishore-2007-web/expence_tracker",
-    live: null
-  },
-  {
-    id: "app-tamil",
-    title: "APP-TAMIL",
-    category: "MOBILE / WEB",
-    description: "Localized software application interface tailored for regional content and utility features.",
-    status: "PRIVATE REPOSITORY",
-    statusType: "private",
-    github: null,
-    live: null
   },
   {
     id: "vsk-interiors",

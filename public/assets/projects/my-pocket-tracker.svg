@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="bgGradPocket" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a1a" />
+      <stop offset="100%" stop-color="#050505" />
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="128" fill="url(#bgGradPocket)" stroke="rgba(255, 255, 255, 0.4)" stroke-width="4" />
+  <path d="M70 90 H186 V160 C186 175 170 186 128 186 C86 186 70 175 70 160 Z" fill="none" stroke="#FFFFFF" stroke-width="6" />
+  <path d="M70 90 L128 65 L186 90" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M96 135 L118 155 L160 110" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="128" y="222" font-family="sans-serif" font-weight="900" font-size="12" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">MY POCKET TRACKER</text>
+</svg>

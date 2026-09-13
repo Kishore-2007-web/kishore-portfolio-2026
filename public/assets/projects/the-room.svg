@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="bgGradRoom" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a1a" />
+      <stop offset="100%" stop-color="#050505" />
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="128" fill="url(#bgGradRoom)" stroke="rgba(255, 255, 255, 0.4)" stroke-width="4" />
+  <path d="M84 65 H172 V185 H84 Z" fill="none" stroke="#FFFFFF" stroke-width="6" />
+  <line x1="84" y1="185" x2="172" y2="185" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" />
+  <circle cx="152" cy="128" r="6" fill="#FFFFFF" />
+  <path d="M100 128 C115 108 141 108 156 128 C141 148 115 148 100 128 Z" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.6" />
+  <text x="128" y="222" font-family="sans-serif" font-weight="900" font-size="14" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">THE ROOM</text>
+</svg>
