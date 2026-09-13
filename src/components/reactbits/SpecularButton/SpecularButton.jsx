@@ -107,6 +107,13 @@ const SpecularButton = ({
     let raf = 0;
     let ro = null;
     let onPointerMove = null;
+    let updateRect = null;
+
+    let isVisible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0 });
+    observer.observe(btn);
 
     try {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -145,6 +152,12 @@ const SpecularButton = ({
       fx.appendChild(gl.canvas);
 
       const sizeRef = { w: 1, h: 1 };
+      let cachedRect = null;
+
+      updateRect = () => {
+        if (btn) cachedRect = btn.getBoundingClientRect();
+      };
+
       const resize = () => {
         if (!btn) return;
         const w = btn.offsetWidth || 120;
@@ -152,6 +165,7 @@ const SpecularButton = ({
         if (!w || !h) return;
         sizeRef.w = w;
         sizeRef.h = h;
+        updateRect();
         renderer.setSize(w + PAD * 2, h + PAD * 2);
         program.uniforms.uCenter.value = [(PAD + w / 2) * dpr, (PAD + h / 2) * dpr];
         program.uniforms.uHalfSize.value = [(w / 2) * dpr, (h / 2) * dpr];
@@ -163,8 +177,10 @@ const SpecularButton = ({
       let pointerAngle = null;
       let proximityT = 0;
       onPointerMove = e => {
-        if (!btn) return;
-        const rect = btn.getBoundingClientRect();
+        if (!btn || !isVisible) return;
+        if (!cachedRect) updateRect();
+        const rect = cachedRect;
+        if (!rect) return;
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right);
@@ -181,6 +197,7 @@ const SpecularButton = ({
         proximityT = t * t * (3 - 2 * t);
       };
       window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('scroll', updateRect, { passive: true });
 
       let angle = 2.4;
       let idleAngle = 2.4;
@@ -192,6 +209,7 @@ const SpecularButton = ({
 
       const update = now => {
         raf = requestAnimationFrame(update);
+        if (!isVisible) return;
         const dt = Math.min((now - last) / 1000, 0.05);
         last = now;
         const p = propsRef.current;
@@ -225,7 +243,13 @@ const SpecularButton = ({
     return () => {
       if (raf) cancelAnimationFrame(raf);
       if (ro) ro.disconnect();
-      if (onPointerMove) window.removeEventListener('pointermove', onPointerMove);
+      observer.disconnect();
+      if (onPointerMove) {
+        window.removeEventListener('pointermove', onPointerMove);
+      }
+      if (updateRect) {
+        window.removeEventListener('scroll', updateRect);
+      }
       if (gl && gl.canvas && gl.canvas.parentNode === fx) {
         fx.removeChild(gl.canvas);
       }

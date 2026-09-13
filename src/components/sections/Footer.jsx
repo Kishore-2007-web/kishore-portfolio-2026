@@ -1,15 +1,43 @@
 import React from 'react';
+import PixelSnow from '../reactbits/PixelSnow/PixelSnow';
 
 export function Footer() {
   return (
     <footer
       style={{
+        position: 'relative',
         padding: '60px 0 40px 0',
         background: '#000000',
         borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        overflow: 'hidden',
       }}
     >
-      <div className="container" style={{ textAlign: 'center' }}>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        <PixelSnow
+          color="#ffffff"
+          flakeSize={0.014}
+          minFlakeSize={1.25}
+          pixelResolution={500}
+          speed={1.25}
+          density={0.75}
+          direction={120}
+          brightness={2.3}
+          depthFade={4.5}
+          farPlane={42}
+          variant="snowflake"
+        />
+      </div>
+
+      <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
         <h3
           style={{
             fontFamily: 'var(--font-display)',
@@ -38,3 +66,5 @@ export function Footer() {
     </footer>
   );
 }
+
+
