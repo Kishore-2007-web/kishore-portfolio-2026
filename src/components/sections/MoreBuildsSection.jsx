@@ -1,74 +1,127 @@
-import React from 'react';
-import { secondaryProjects } from '../../data/projects';
-import { GlassCard } from '../ui/GlassCard';
-import { GlassButton } from '../ui/GlassButton';
-import { StatusPill } from '../ui/StatusPill';
+import React, { useState, useEffect } from 'react';
+import { archiveProjects } from '../../data/projects';
+import DriftWall from '../reactbits/DriftWall/DriftWall';
+import { ProjectArchiveModal } from '../ui/ProjectArchiveModal';
 
 export function MoreBuildsSection() {
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Compute responsive configuration for DriftWall
+  const wallConfig = React.useMemo(() => {
+    if (windowWidth < 640) {
+      return {
+        columns: 2,
+        tileWidth: 140,
+        tileHeight: 92,
+        gap: 12,
+        height: '440px',
+      };
+    } else if (windowWidth < 1024) {
+      return {
+        columns: 3,
+        tileWidth: 170,
+        tileHeight: 112,
+        gap: 14,
+        height: '520px',
+      };
+    }
+    return {
+      columns: 5,
+      tileWidth: 200,
+      tileHeight: 132,
+      gap: 18,
+      height: '600px',
+    };
+  }, [windowWidth]);
+
+  // Map archiveProjects into DriftWall items
+  const driftItems = React.useMemo(() => {
+    return archiveProjects.map((project) => ({
+      image: project.image,
+      title: project.title,
+      href: '#',
+      project: project,
+    }));
+  }, []);
+
   return (
     <section
       id="more-builds"
       style={{
         padding: '60px 0 80px 0',
         background: '#000000',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
       <div className="container">
-        <div className="section-tag">04 — MORE BUILDS</div>
+        <div className="section-tag" style={{ color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.4)' }}>
+          04 — MORE BUILDS
+        </div>
 
-        <h2 className="section-heading">
+        <h2 className="section-heading" style={{ marginBottom: '8px', color: '#ffffff' }}>
           SECONDARY ARCHIVE.
         </h2>
 
+        <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1rem', marginBottom: '28px', maxWidth: '600px' }}>
+          A visual archive of selected projects and experiments. Click any tile to inspect details.
+        </p>
+
         <div
+          className="archive-driftwall"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '20px',
-            marginTop: '32px',
+            height: wallConfig.height,
+            width: '100%',
+            position: 'relative',
+            borderRadius: '20px',
+            overflow: 'hidden',
+            background: '#000000',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 0 40px rgba(255, 255, 255, 0.05)',
           }}
         >
-          {secondaryProjects.map((item) => (
-            <GlassCard key={item.id} style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                    {item.category}
-                  </span>
-                  <StatusPill status={item.status} />
-                </div>
-
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#ffffff', marginBottom: '8px' }}>
-                  {item.title}
-                </h3>
-
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '24px' }}>
-                  {item.description}
-                </p>
-              </div>
-
-              {/* Verified Links */}
-              <div style={{ display: 'flex', gap: '12px' }}>
-                {item.github && (
-                  <GlassButton href={item.github} style={{ padding: '8px 16px', fontSize: '0.8125rem' }}>
-                    GITHUB →
-                  </GlassButton>
-                )}
-                {item.live && (
-                  <GlassButton href={item.live} variant="primary" style={{ padding: '8px 16px', fontSize: '0.8125rem' }}>
-                    LIVE ↗
-                  </GlassButton>
-                )}
-                {!item.github && !item.live && (
-                  <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                    [ PRIVATE PROJECT ]
-                  </span>
-                )}
-              </div>
-            </GlassCard>
-          ))}
+          <DriftWall
+            items={driftItems}
+            columns={wallConfig.columns}
+            tileWidth={wallConfig.tileWidth}
+            tileHeight={wallConfig.tileHeight}
+            gap={wallConfig.gap}
+            tilt={16}
+            turn={-14}
+            perspective={1200}
+            depth={120}
+            speed={42}
+            direction="up"
+            variance={0.45}
+            parallax={0.6}
+            lift={64}
+            fade={0.3}
+            dim={0.9}
+            grayscale={true}
+            overlayColor="#000000"
+            onTileClick={(item) => setSelectedProject(item.project)}
+          />
         </div>
       </div>
+
+      {/* Interactive Project Details Modal */}
+      <ProjectArchiveModal
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </section>
   );
 }
+
+export default MoreBuildsSection;

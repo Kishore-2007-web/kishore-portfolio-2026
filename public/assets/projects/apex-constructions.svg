@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 264" width="400" height="264">
+  <rect width="400" height="264" fill="#050505" />
+  <polygon points="200,60 250,135 150,135" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" />
+  <polygon points="200,85 230,135 170,135" fill="rgba(255, 255, 255, 0.25)" />
+  <line x1="130" y1="135" x2="270" y2="135" stroke="#ffffff" stroke-width="3" />
+  <text x="200" y="195" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="3">APEX CONSTRUCTIONS</text>
+  <text x="200" y="218" font-family="monospace" font-size="11" fill="rgba(255, 255, 255, 0.7)" text-anchor="middle" letter-spacing="1">ARCHITECTURAL SHOWCASE</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 264" width="400" height="264">
+  <rect width="400" height="264" fill="#050505" />
+  <circle cx="200" cy="95" r="30" fill="none" stroke="#ffffff" stroke-width="4" />
+  <path d="M200 65 V55 M200 125 V135 M170 95 H160 M240 95 H230 M179 74 L172 67 M221 116 L228 123 M179 116 L172 123 M221 74 L228 67" stroke="#ffffff" stroke-width="2" />
+  <text x="200" y="195" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="3">LUMI-RE RESTAURANT</text>
+  <text x="200" y="218" font-family="monospace" font-size="11" fill="rgba(255, 255, 255, 0.7)" text-anchor="middle" letter-spacing="1">FINE DINING EXPERIENCE</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 264" width="400" height="264">
+  <rect width="400" height="264" fill="#050505" />
+  <path d="M120 125 A80 80 0 0 1 280 125 Z" fill="rgba(255, 255, 255, 0.9)" />
+  <line x1="100" y1="125" x2="300" y2="125" stroke="#ffffff" stroke-width="3" />
+  <line x1="120" y1="135" x2="280" y2="135" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" />
+  <line x1="150" y1="143" x2="250" y2="143" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2" />
+  <text x="200" y="195" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="3">THE GRAND HORIZON</text>
+  <text x="200" y="218" font-family="monospace" font-size="11" fill="rgba(255, 255, 255, 0.7)" text-anchor="middle" letter-spacing="1">LUXURY RESORT &amp; HOTEL</text>
+</svg>
