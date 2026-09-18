@@ -59,7 +59,7 @@ export function MoreBuildsSection() {
     <section
       id="more-builds"
       style={{
-        padding: '60px 0 80px 0',
+        padding: '80px 0 100px 0',
         background: '#000000',
         position: 'relative',
         overflow: 'hidden',
@@ -97,17 +97,17 @@ export function MoreBuildsSection() {
             tileWidth={wallConfig.tileWidth}
             tileHeight={wallConfig.tileHeight}
             gap={wallConfig.gap}
-            tilt={16}
-            turn={-14}
+            tilt={0}
+            turn={0}
             perspective={1200}
-            depth={120}
-            speed={42}
+            depth={0}
+            speed={28}
             direction="up"
-            variance={0.45}
-            parallax={0.6}
-            lift={64}
-            fade={0.3}
-            dim={0.9}
+            variance={0.2}
+            parallax={0.3}
+            lift={28}
+            fade={0.4}
+            dim={0.85}
             grayscale={true}
             overlayColor="#000000"
             onTileClick={(item) => setSelectedProject(item.project)}

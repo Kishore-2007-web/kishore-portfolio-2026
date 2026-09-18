@@ -36,7 +36,7 @@ export function SelectedWorkSection() {
     <section
       id="work"
       style={{
-        padding: '40px 0 20px 0',
+        padding: '60px 0 40px 0',
         background: '#000000',
         position: 'relative',
         overflow: 'hidden',
@@ -60,6 +60,8 @@ export function SelectedWorkSection() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
+            borderRadius: '24px',
           }}
         >
           <OrbitImages
