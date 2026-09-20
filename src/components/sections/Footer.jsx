@@ -56,7 +56,7 @@ export function Footer() {
         </p>
 
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', fontFamily: 'var(--font-mono)', marginBottom: '24px' }}>
-          Web · Software · AI · Games · 3D
+          Web · UI/UX · Software · AI · Games · 3D
         </p>
 
         <div style={{ color: 'var(--text-dim)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
