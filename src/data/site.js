@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "Kishore",
-  title: "Web Developer · Software Developer · Game Developer · 3D Creator",
+  title: "Web Developer · UI/UX Designer · Software Developer · Game Developer · 3D Creator",
   tagline: "I BUILD DIGITAL EXPERIENCES THAT MATTER.",
-  heroParagraph: "I build websites, software, AI projects, games and interactive experiences with a focus on usefulness and real-world impact.",
+  heroParagraph: "I build websites, UI/UX designs, software, AI projects, games and interactive experiences with a focus on usefulness and real-world impact.",
   aboutCopy: [
     "I don't build just to make things look impressive.",
     "I'm Kishore, a Computer Science student and developer who enjoys building across web development, software, AI, game development and 3D.",

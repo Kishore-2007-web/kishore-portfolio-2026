@@ -1,10 +1,11 @@
 import React from 'react';
 import { capabilities } from '../../data/capabilities';
 import { GlassCard } from '../ui/GlassCard';
-import { Globe, Code, Cpu, Gamepad2, Box } from 'lucide-react';
+import { Globe, Layout, Code, Cpu, Gamepad2, Box } from 'lucide-react';
 
 const iconMap = {
   Globe: Globe,
+  Layout: Layout,
   Code: Code,
   Cpu: Cpu,
   Gamepad2: Gamepad2,

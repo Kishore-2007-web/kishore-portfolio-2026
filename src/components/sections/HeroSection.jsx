@@ -133,6 +133,9 @@ export function HeroSection() {
             <GlassButton href="#contact" variant="secondary">
               CONTACT ME ↗
             </GlassButton>
+            <GlassButton href="/resume.pdf" target="_blank" rel="noopener noreferrer" variant="secondary">
+              RESUME ↗
+            </GlassButton>
           </div>
         </div>
       </div>
