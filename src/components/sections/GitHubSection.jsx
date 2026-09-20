@@ -2,8 +2,6 @@ import React from 'react';
 import { siteConfig } from '../../data/site';
 import { GlassPanel } from '../ui/GlassPanel';
 import { GlassButton } from '../ui/GlassButton';
-import { Particles } from '../three/Particles';
-import Galaxy from '../reactbits/Galaxy/Galaxy';
 import { Github, ExternalLink } from 'lucide-react';
 
 export function GitHubSection() {
@@ -17,29 +15,7 @@ export function GitHubSection() {
         overflow: 'hidden',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-      >
-        <Galaxy
-          mouseRepulsion={true}
-          mouseInteraction={false}
-          density={0.8}
-          glowIntensity={0.2}
-          saturation={0}
-          hueShift={0}
-          repulsionStrength={6.5}
-          speed={0.2}
-          transparent={false}
-        />
-      </div>
+
 
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div className="section-tag">06 — BUILDING IN PUBLIC</div>
