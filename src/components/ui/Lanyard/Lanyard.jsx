@@ -9,7 +9,7 @@ import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import cardGLB from '../../../assets/lanyard/card.glb';
 import lanyard from '../../../assets/lanyard/lanyard.png';
 import cardPNG from '../../../assets/lanyard/card.png';
-import photoJPG from '../../../assets/lanyard/photo.jpg';
+import photoPNG from '../../../assets/lanyard/new.png';
 
 import * as THREE from 'three';
 import './Lanyard.css';
@@ -33,8 +33,8 @@ export default function Lanyard({
   gravity = [0, -40, 0],
   fov = 20,
   transparent = true,
-  frontImage = photoJPG,
-  backImage = photoJPG,
+  frontImage = photoPNG,
+  backImage = photoPNG,
   imageFit = 'cover',
   lanyardImage = lanyard,
   lanyardWidth = 2.5
@@ -107,8 +107,8 @@ function Band({
   maxSpeed = 50,
   minSpeed = 0,
   isMobile = false,
-  frontImage = photoJPG,
-  backImage = photoJPG,
+  frontImage = photoPNG,
+  backImage = photoPNG,
   imageFit = 'cover',
   lanyardImage = lanyard,
   lanyardWidth = 2.5
