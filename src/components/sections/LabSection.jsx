@@ -3,13 +3,16 @@ import { MaskedHeading } from '../three/MaskedHeading';
 import CircularGallery from '../reactbits/CircularGallery/CircularGallery';
 import { WebGLErrorBoundary } from '../ui/WebGLErrorBoundary';
 import { GlassPanel } from '../ui/GlassPanel';
-import { GlassButton } from '../ui/GlassButton';
 import { StatusPill } from '../ui/StatusPill';
+import { GlassButton } from '../ui/GlassButton';
 import { X, Github, ExternalLink, Sparkles, CheckCircle2 } from 'lucide-react';
 import { labItems as rawLabItems } from '../../data/lab';
 
 export function LabSection() {
   const [selectedExperiment, setSelectedExperiment] = useState(null);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+
+  const activeItem = rawLabItems[activeDisplayIndex] || rawLabItems[0];
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -52,7 +55,7 @@ export function LabSection() {
             lineHeight: 1.6,
           }}
         >
-          Experimental prototypes, 3D modeling studies, WebGL shaders, and creative technology explorations.
+          A collection of things I built, broke, tested, and learned from.
           <span style={{ display: 'block', marginTop: '6px', fontSize: '0.875rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             [ Drag horizontally to rotate • Click any experiment card to inspect details ]
           </span>
@@ -83,9 +86,92 @@ export function LabSection() {
               scrollSpeed={1.3}
               autoSpin={true}
               autoSpinSpeed={0.8}
-              onItemClick={(item) => setSelectedExperiment(item)}
+              onItemClick={setSelectedExperiment}
+              onActiveItemChange={setActiveDisplayIndex}
             />
           </WebGLErrorBoundary>
+        </div>
+
+        {/* Dynamic Project Details Display */}
+        <div
+          style={{
+            marginTop: '32px',
+            padding: '24px 32px',
+            borderRadius: '16px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '24px',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <div style={{ flex: '1 1 300px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                LAB EXPERIMENT 0{activeItem.id}
+              </span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>•</span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {activeItem.category}
+              </span>
+            </div>
+            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#ffffff', marginBottom: '8px' }}>
+              {activeItem.title}
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', lineHeight: 1.5 }}>
+              {activeItem.description}
+            </p>
+            
+            {activeItem.technologies && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '16px' }}>
+                {activeItem.technologies.slice(0, 4).map((tech, tIdx) => (
+                  <span
+                    key={tIdx}
+                    style={{
+                      fontSize: '0.6875rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: '#a1a1aa',
+                      padding: '4px 8px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      borderRadius: '4px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
+            <StatusPill status={activeItem.status || 'RESEARCH PROTOTYPE'} />
+            <button
+              onClick={() => setSelectedExperiment(activeItem)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              }}
+            >
+              INSPECT DETAILS →
+            </button>
+          </div>
         </div>
       </div>
 

@@ -362,8 +362,8 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1000;
-    this.plane.scale.y = (this.viewport.height * (850 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
+    this.plane.scale.y = (this.viewport.height * (550 * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (400 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
@@ -384,6 +384,7 @@ class App {
       scrollSpeed = 2,
       scrollEase = 0.05,
       onItemClick,
+      onActiveItemChange,
       autoSpin = true,
       autoSpinSpeed = 0.8
     } = {}
@@ -392,6 +393,8 @@ class App {
     this.container = container;
     this.scrollSpeed = scrollSpeed;
     this.onItemClick = onItemClick;
+    this.onActiveItemChange = onActiveItemChange;
+    this.lastActiveIdx = -1;
     this.autoSpin = autoSpin;
     this.autoSpinSpeed = autoSpinSpeed;
     this.isHovered = false;
@@ -573,6 +576,21 @@ class App {
     if (this.medias) {
       this.medias.forEach(media => media.update(this.scroll, direction));
     }
+    
+    if (this.medias && this.medias[0]) {
+      const width = this.medias[0].width;
+      const currentScroll = this.scroll.current;
+      const itemIndex = Math.round(currentScroll / width);
+      const sourceLength = this.rawItems.length || 1;
+      let activeIdx = itemIndex % sourceLength;
+      if (activeIdx < 0) activeIdx += sourceLength;
+      
+      if (this.onActiveItemChange && this.lastActiveIdx !== activeIdx) {
+        this.lastActiveIdx = activeIdx;
+        this.onActiveItemChange(activeIdx);
+      }
+    }
+
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
     this.raf = window.requestAnimationFrame(this.update.bind(this));
@@ -635,6 +653,7 @@ export function CircularGallery({
   scrollSpeed = 2,
   scrollEase = 0.05,
   onItemClick,
+  onActiveItemChange,
   autoSpin = true,
   autoSpinSpeed = 0.8
 }) {
@@ -654,6 +673,7 @@ export function CircularGallery({
         scrollSpeed,
         scrollEase,
         onItemClick,
+        onActiveItemChange,
         autoSpin,
         autoSpinSpeed
       });
@@ -663,7 +683,7 @@ export function CircularGallery({
       isMounted = false;
       if (app) app.destroy();
     };
-  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick, autoSpin, autoSpinSpeed]);
+  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick, onActiveItemChange, autoSpin, autoSpinSpeed]);
   return (
     <div
       className="circular-gallery"
