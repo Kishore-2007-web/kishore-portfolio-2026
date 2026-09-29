@@ -43,7 +43,7 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: 'rgba(0, 0, 0, 0.92)',
+        background: 'rgba(var(--shadow-rgb), 0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         display: 'flex',
@@ -71,8 +71,8 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
           flexDirection: 'column',
           borderRadius: '24px',
           overflow: 'hidden',
-          border: '1px solid rgba(255, 255, 255, 0.25)',
-          boxShadow: '0 32px 80px -16px rgba(0, 0, 0, 0.8)',
+          border: '1px solid rgba(var(--glass-rgb), 0.25)',
+          boxShadow: '0 32px 80px -16px rgba(var(--shadow-rgb), 0.8)',
           background: '#0a0a0d',
         }}
       >
@@ -83,8 +83,8 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 24px',
-            background: 'rgba(255, 255, 255, 0.04)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+            background: 'rgba(var(--glass-rgb), 0.04)',
+            borderBottom: '1px solid rgba(var(--glass-rgb), 0.12)',
             backdropFilter: 'blur(10px)',
             flexWrap: 'wrap',
             gap: '12px',
@@ -97,12 +97,12 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
                 width: '36px',
                 height: '36px',
                 borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'rgba(var(--glass-rgb), 0.1)',
+                border: '1px solid rgba(var(--glass-rgb), 0.2)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ffffff',
+                color: 'var(--text)',
               }}
             >
               <FileText size={18} />
@@ -114,7 +114,7 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
                   fontFamily: 'var(--font-display, sans-serif)',
                   fontSize: '1.125rem',
                   fontWeight: 800,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   margin: 0,
                   letterSpacing: '0.04em',
                 }}
@@ -144,8 +144,8 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
                 gap: '6px',
                 padding: '8px 16px',
                 borderRadius: '9999px',
-                background: '#ffffff',
-                color: '#000000',
+                background: 'var(--text)',
+                color: 'var(--bg)',
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '0.8125rem',
                 fontWeight: 700,
@@ -168,17 +168,17 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '9999px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                color: '#ffffff',
+                background: 'rgba(var(--glass-rgb), 0.08)',
+                border: '1px solid rgba(var(--glass-rgb), 0.2)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '0.8125rem',
                 fontWeight: 600,
                 textDecoration: 'none',
                 transition: 'all 0.2s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.16)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.16)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.08)')}
             >
               <ExternalLink size={14} /> NEW TAB
             </a>
@@ -188,12 +188,12 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
               onClick={onClose}
               aria-label="Close resume viewer"
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'rgba(var(--glass-rgb), 0.08)',
+                border: '1px solid rgba(var(--glass-rgb), 0.2)',
                 borderRadius: '50%',
                 width: '36px',
                 height: '36px',
-                color: '#ffffff',
+                color: 'var(--text)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -202,12 +202,12 @@ export function ResumeModal({ isOpen, onClose, resumeUrl = '/resume.pdf' }) {
                 marginLeft: '6px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#ffffff';
-                e.currentTarget.style.color = '#000000';
+                e.currentTarget.style.background = 'var(--text)';
+                e.currentTarget.style.color = 'var(--bg)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.08)';
+                e.currentTarget.style.color = 'var(--text)';
               }}
             >
               <X size={18} />

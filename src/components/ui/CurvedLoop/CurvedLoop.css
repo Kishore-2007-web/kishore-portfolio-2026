@@ -20,7 +20,7 @@
   overflow: visible;
   display: block;
   font-size: 6.0rem;
-  fill: #ffffff;
+  fill: var(--text);
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -30,7 +30,7 @@
 }
 
 .curved-loop-text {
-  fill: #ffffff;
+  fill: var(--text);
   font-family: var(--font-display, 'Outfit', sans-serif);
   font-weight: 900;
   letter-spacing: 0.04em;

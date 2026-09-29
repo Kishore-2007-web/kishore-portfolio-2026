@@ -37,7 +37,7 @@ export function SelectedWorkSection() {
       id="work"
       style={{
         padding: '60px 0 40px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -77,14 +77,14 @@ export function SelectedWorkSection() {
             itemSize={130}
             responsive={true}
             showPath={true}
-            pathColor="rgba(255, 255, 255, 0.3)"
+            pathColor="rgba(var(--glass-rgb), 0.3)"
             pathWidth={2}
             centerContent={
               <div style={{ textAlign: 'center', pointerEvents: 'none' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8125rem', color: 'var(--text-muted)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '6px' }}>
                   CLICK ANY PROJECT TO INSPECT
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.05em' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', letterSpacing: '0.05em' }}>
                   6 FEATURED BUILDS
                 </div>
               </div>
@@ -104,7 +104,7 @@ export function SelectedWorkSection() {
             position: 'fixed',
             inset: 0,
             zIndex: 1000,
-            background: 'rgba(0, 0, 0, 0.85)',
+            background: 'rgba(var(--shadow-rgb), 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             display: 'flex',
@@ -132,12 +132,12 @@ export function SelectedWorkSection() {
                   position: 'absolute',
                   top: '20px',
                   right: '20px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(var(--glass-rgb), 0.08)',
+                  border: '1px solid rgba(var(--glass-rgb), 0.2)',
                   borderRadius: '50%',
                   width: '36px',
                   height: '36px',
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   fontSize: '1.25rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -163,14 +163,14 @@ export function SelectedWorkSection() {
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
                   fontWeight: 800,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   marginBottom: '8px',
                 }}
               >
                 {selectedProject.title}
               </h3>
 
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '20px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.875rem', color: 'rgba(var(--glass-rgb), 0.7)', marginBottom: '20px' }}>
                 {selectedProject.category}
               </div>
 
@@ -181,8 +181,8 @@ export function SelectedWorkSection() {
                   height: '240px',
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  background: 'rgba(0, 0, 0, 0.8)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(var(--shadow-rgb), 0.8)',
+                  border: '1px solid rgba(var(--glass-rgb), 0.15)',
                   marginBottom: '24px',
                   display: 'flex',
                   alignItems: 'center',
@@ -210,8 +210,8 @@ export function SelectedWorkSection() {
                       style={{
                         padding: '4px 12px',
                         borderRadius: '4px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(var(--glass-rgb), 0.05)',
+                        border: '1px solid rgba(var(--glass-rgb), 0.1)',
                         fontSize: '0.8125rem',
                         fontFamily: 'var(--font-mono)',
                         color: 'var(--text-muted)',

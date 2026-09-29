@@ -3,7 +3,7 @@ import gsap from 'gsap';
 
 export function StrokeText({
   text = "PURPOSE OVER FANCY.",
-  strokeColor = "#ffffff",
+  strokeColor = "var(--text)",
   fillColor = "#F8FAFC",
   strokeWidth = 1.4,
   drawDuration = 1.6,
@@ -105,7 +105,7 @@ export function StrokeText({
         alignItems: 'center',
         padding: '1.5rem 0',
         overflow: 'hidden',
-        background: '#000000'
+        background: 'var(--bg)'
       }}
     >
       <svg

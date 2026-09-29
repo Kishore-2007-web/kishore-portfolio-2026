@@ -43,7 +43,7 @@ export function ProjectArchiveModal({ project, onClose }) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: 'rgba(0, 0, 0, 0.92)',
+        background: 'rgba(var(--shadow-rgb), 0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         display: 'flex',
@@ -75,9 +75,9 @@ export function ProjectArchiveModal({ project, onClose }) {
           style={{
             padding: 'clamp(24px, 5vw, 36px)',
             position: 'relative',
-            background: '#000000',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: '0 32px 80px -16px rgba(255, 255, 255, 0.15)',
+            background: 'var(--bg)',
+            border: '1px solid rgba(var(--glass-rgb), 0.3)',
+            boxShadow: '0 32px 80px -16px rgba(var(--glass-rgb), 0.15)',
           }}
         >
           {/* Close Button */}
@@ -89,12 +89,12 @@ export function ProjectArchiveModal({ project, onClose }) {
               position: 'absolute',
               top: '20px',
               right: '20px',
-              background: '#000000',
-              border: '1px solid #ffffff',
+              background: 'var(--bg)',
+              border: '1px solid var(--border-focus)',
               borderRadius: '50%',
               width: '38px',
               height: '38px',
-              color: '#ffffff',
+              color: 'var(--text)',
               fontSize: '1.25rem',
               cursor: 'pointer',
               display: 'flex',
@@ -104,13 +104,13 @@ export function ProjectArchiveModal({ project, onClose }) {
               zIndex: 10,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#ffffff';
-              e.currentTarget.style.color = '#000000';
+              e.currentTarget.style.background = 'var(--text)';
+              e.currentTarget.style.color = 'var(--bg)';
               e.currentTarget.style.transform = 'scale(1.08)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#000000';
-              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.background = 'var(--bg)';
+              e.currentTarget.style.color = 'var(--text)';
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
@@ -125,8 +125,8 @@ export function ProjectArchiveModal({ project, onClose }) {
                 height: '240px',
                 borderRadius: '16px',
                 overflow: 'hidden',
-                background: '#000000',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+                background: 'var(--bg)',
+                border: '1px solid rgba(var(--glass-rgb), 0.3)',
                 marginBottom: '24px',
                 display: 'flex',
                 alignItems: 'center',
@@ -153,8 +153,8 @@ export function ProjectArchiveModal({ project, onClose }) {
                 display: 'inline-block',
                 padding: '4px 10px',
                 borderRadius: '6px',
-                background: '#ffffff',
-                color: '#000000',
+                background: 'var(--text)',
+                color: 'var(--bg)',
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '0.75rem',
                 fontWeight: 700,
@@ -172,7 +172,7 @@ export function ProjectArchiveModal({ project, onClose }) {
                 fontFamily: 'var(--font-display, sans-serif)',
                 fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
                 fontWeight: 900,
-                color: '#ffffff',
+                color: 'var(--text)',
                 lineHeight: 1.2,
                 marginTop: '4px',
               }}
@@ -184,7 +184,7 @@ export function ProjectArchiveModal({ project, onClose }) {
           {/* Description */}
           <p
             style={{
-              color: '#ffffff',
+              color: 'var(--text)',
               fontSize: '1.0625rem',
               lineHeight: 1.6,
               marginBottom: '24px',
@@ -200,7 +200,7 @@ export function ProjectArchiveModal({ project, onClose }) {
                 style={{
                   fontFamily: 'var(--font-mono, monospace)',
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: 'rgba(var(--glass-rgb), 0.7)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
                   marginBottom: '10px',
@@ -215,11 +215,11 @@ export function ProjectArchiveModal({ project, onClose }) {
                     style={{
                       padding: '5px 12px',
                       borderRadius: '6px',
-                      background: '#000000',
-                      border: '1px solid #ffffff',
+                      background: 'var(--bg)',
+                      border: '1px solid var(--border-focus)',
                       fontSize: '0.8125rem',
                       fontFamily: 'var(--font-mono, monospace)',
-                      color: '#ffffff',
+                      color: 'var(--text)',
                       fontWeight: 600,
                     }}
                   >
@@ -231,7 +231,7 @@ export function ProjectArchiveModal({ project, onClose }) {
           )}
 
           {/* Conditional Action Buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', paddingTop: '12px', borderTop: '1px solid rgba(var(--glass-rgb), 0.2)' }}>
             {project.liveDemo && (
               <GlassButton
                 href={project.liveDemo}
@@ -241,10 +241,10 @@ export function ProjectArchiveModal({ project, onClose }) {
                 style={{
                   padding: '10px 22px',
                   fontSize: '0.875rem',
-                  background: '#ffffff',
-                  color: '#000000',
+                  background: 'var(--text)',
+                  color: 'var(--bg)',
                   fontWeight: 800,
-                  border: '1px solid #ffffff',
+                  border: '1px solid var(--border-focus)',
                 }}
               >
                 LIVE DEMO ↗
@@ -260,9 +260,9 @@ export function ProjectArchiveModal({ project, onClose }) {
                 style={{
                   padding: '10px 22px',
                   fontSize: '0.875rem',
-                  background: '#000000',
-                  color: '#ffffff',
-                  border: '1px solid #ffffff',
+                  background: 'var(--bg)',
+                  color: 'var(--text)',
+                  border: '1px solid var(--border-focus)',
                   fontWeight: 700,
                 }}
               >

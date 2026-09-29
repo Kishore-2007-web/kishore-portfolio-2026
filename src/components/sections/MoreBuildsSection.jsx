@@ -60,21 +60,21 @@ export function MoreBuildsSection() {
       id="more-builds"
       style={{
         padding: '80px 0 100px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
       <div className="container">
-        <div className="section-tag" style={{ color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.4)' }}>
+        <div className="section-tag" style={{ color: 'var(--text)', borderColor: 'rgba(var(--glass-rgb), 0.4)' }}>
           04 — MORE BUILDS
         </div>
 
-        <h2 className="section-heading" style={{ marginBottom: '8px', color: '#ffffff' }}>
+        <h2 className="section-heading" style={{ marginBottom: '8px', color: 'var(--text)' }}>
           SECONDARY ARCHIVE.
         </h2>
 
-        <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1rem', marginBottom: '28px', maxWidth: '600px' }}>
+        <p style={{ color: 'rgba(var(--glass-rgb), 0.85)', fontSize: '1rem', marginBottom: '28px', maxWidth: '600px' }}>
           A visual archive of selected projects and experiments. Click any tile to inspect details.
         </p>
 
@@ -86,9 +86,9 @@ export function MoreBuildsSection() {
             position: 'relative',
             borderRadius: '20px',
             overflow: 'hidden',
-            background: '#000000',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            boxShadow: '0 0 40px rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg)',
+            border: '1px solid rgba(var(--glass-rgb), 0.25)',
+            boxShadow: '0 0 40px rgba(var(--glass-rgb), 0.05)',
           }}
         >
           <DriftWall
@@ -109,7 +109,7 @@ export function MoreBuildsSection() {
             fade={0.4}
             dim={0.85}
             grayscale={true}
-            overlayColor="#000000"
+            overlayColor="var(--bg)"
             onTileClick={(item) => setSelectedProject(item.project)}
           />
         </div>

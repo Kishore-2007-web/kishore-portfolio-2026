@@ -15,7 +15,7 @@ import { Footer } from './components/sections/Footer';
 
 export function App() {
   return (
-    <div style={{ backgroundColor: '#000000', color: '#ffffff', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative' }}>
       <GlowCursor
         color="#67E8F9"
         secondaryColor="#A78BFA"

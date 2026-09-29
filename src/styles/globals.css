@@ -4,18 +4,22 @@
    ========================================================================== */
 
 :root {
+  /* Dynamic RGB colors for transparency (used in JS overrides) */
+  --glass-rgb: 255, 255, 255;
+  --shadow-rgb: 0, 0, 0;
+
   /* Color System */
   --bg: #000000;
   --bg-subtle: #030303;
   --bg-card: #050505;
 
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --surface-active: rgba(255, 255, 255, 0.09);
+  --surface: rgba(var(--glass-rgb), 0.035);
+  --surface-hover: rgba(var(--glass-rgb), 0.06);
+  --surface-active: rgba(var(--glass-rgb), 0.09);
 
-  --border: rgba(255, 255, 255, 0.10);
-  --border-hover: rgba(255, 255, 255, 0.18);
-  --border-focus: rgba(255, 255, 255, 0.35);
+  --border: rgba(var(--glass-rgb), 0.10);
+  --border-hover: rgba(var(--glass-rgb), 0.18);
+  --border-focus: rgba(var(--glass-rgb), 0.35);
 
   --text: #ffffff;
   --text-primary: #f5f5f5;
@@ -36,6 +40,37 @@
   /* Layout Boundaries */
   --max-width: 1280px;
   --header-height: 72px;
+}
+
+/* -------------------------------------
+   WHITE THEME (LIGHT MODE) OVERRIDES
+   ------------------------------------- */
+:root[data-theme="white"] {
+  --glass-rgb: 0, 0, 0;
+  --shadow-rgb: 0, 0, 0;
+
+  --bg: #ffffff;
+  --bg-subtle: #f9f9fa;
+  --bg-card: #f2f2f4;
+
+  --surface: rgba(0, 0, 0, 0.035);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --surface-active: rgba(0, 0, 0, 0.09);
+
+  --border: rgba(0, 0, 0, 0.10);
+  --border-hover: rgba(0, 0, 0, 0.18);
+  --border-focus: rgba(0, 0, 0, 0.35);
+
+  --text: #0a0a0a;
+  --text-primary: #171717;
+  --text-secondary: #4b4b4b;
+  --text-muted: #737373;
+  --text-dim: #a3a3a3;
+
+  /* Accent colors - kept subtle for light mode */
+  --accent-cyan: rgba(0, 150, 180, 0.7);
+  --accent-blue: rgba(30, 100, 200, 0.7);
+  --accent-violet: rgba(120, 60, 200, 0.6);
 }
 
 /* Reset & Base Setup */
@@ -73,11 +108,11 @@ body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(var(--glass-rgb), 0.15);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(var(--glass-rgb), 0.3);
 }
 
 /* Glassmorphism System */
@@ -86,7 +121,7 @@ body {
   border: 1px solid var(--border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 20px 80px rgba(var(--shadow-rgb), 0.45);
   border-radius: 16px;
   transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -97,7 +132,7 @@ body {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(var(--glass-rgb), 0.025);
   border: 1px solid var(--border);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -118,7 +153,7 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--glass-rgb), 0.04);
   border: 1px solid var(--border);
   border-radius: 9999px;
   color: var(--text);
@@ -134,24 +169,24 @@ body {
 }
 
 .glass-button:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(var(--glass-rgb), 0.09);
   border-color: var(--border-hover);
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 30px rgba(var(--shadow-rgb), 0.4);
 }
 
 .glass-button-primary {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(var(--glass-rgb), 0.95);
   color: #000000;
-  border: 1px solid rgba(255, 255, 255, 1);
+  border: 1px solid rgba(var(--glass-rgb), 1);
   font-weight: 600;
 }
 
 .glass-button-primary:hover {
   background: #ffffff;
   color: #000000;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 25px rgba(var(--glass-rgb), 0.25);
 }
 
 /* Editorial Typography */
@@ -210,7 +245,7 @@ body {
 
 /* Focus Visible for Accessibility */
 :focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline: 2px solid rgba(var(--glass-rgb), 0.6);
   outline-offset: 3px;
 }
 

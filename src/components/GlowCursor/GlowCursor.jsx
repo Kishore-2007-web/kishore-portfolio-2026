@@ -179,6 +179,10 @@ export default function GlowCursor({
         }
       }
 
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const glassRGB = currentTheme === 'white' ? '0, 0, 0' : '255, 255, 255';
+      const shadowRGB = currentTheme === 'white' ? '0, 0, 0' : '0, 0, 0';
+
       // Draw Head Glow & Hotspot Core (Optional via showHead prop)
       if (showHead) {
         const head = trail[0];
@@ -192,7 +196,7 @@ export default function GlowCursor({
         const glowAlpha = Math.min(1, masterAlpha * 0.6 * glowIntensity * brightness);
         outerGrad.addColorStop(0, `rgba(${rgb1[0]}, ${rgb1[1]}, ${rgb1[2]}, ${glowAlpha})`);
         outerGrad.addColorStop(0.5, `rgba(${rgb2[0]}, ${rgb2[1]}, ${rgb2[2]}, ${glowAlpha * 0.4})`);
-        outerGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        outerGrad.addColorStop(1, `rgba(${shadowRGB}, 0)`);
 
         ctx.beginPath();
         ctx.arc(head.x, head.y, Math.max(1, headRadius * 2.5), 0, Math.PI * 2);
@@ -206,7 +210,7 @@ export default function GlowCursor({
           head.x, head.y, coreRadius
         );
         const coreAlpha = Math.min(1, masterAlpha * brightness);
-        coreGrad.addColorStop(0, `rgba(255, 255, 255, ${coreAlpha})`);
+        coreGrad.addColorStop(0, `rgba(${glassRGB}, ${coreAlpha})`);
         coreGrad.addColorStop(0.6, `rgba(${rgb1[0]}, ${rgb1[1]}, ${rgb1[2]}, ${coreAlpha * 0.9})`);
         coreGrad.addColorStop(1, `rgba(${rgb1[0]}, ${rgb1[1]}, ${rgb1[2]}, 0)`);
 
@@ -218,6 +222,8 @@ export default function GlowCursor({
 
       // Noise shimmer particles
       if (noiseStrength > 0 && Math.random() < 0.6) {
+        const head = trail[0];
+        const headRadius = trailWidth * 2.5 * glowSpread * pulse;
         const particleAngle = Math.random() * Math.PI * 2;
         const particleDist = Math.random() * headRadius * 0.8;
         const px = head.x + Math.cos(particleAngle) * particleDist;
@@ -226,7 +232,7 @@ export default function GlowCursor({
 
         ctx.beginPath();
         ctx.arc(px, py, pSize, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${masterAlpha * noiseStrength * 15})`;
+        ctx.fillStyle = `rgba(${glassRGB}, ${masterAlpha * noiseStrength * 15})`;
         ctx.fill();
       }
     }

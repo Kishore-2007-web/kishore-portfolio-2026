@@ -15,7 +15,7 @@ export function ContactSection() {
       className="contact-section"
       style={{
         padding: '100px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -37,7 +37,7 @@ export function ContactSection() {
         <WebGLErrorBoundary minHeight="100%">
           <LightRays
             raysOrigin="top-center"
-            raysColor="#ffffff"
+            raysColor="var(--text)"
             raysSpeed={1.5}
             lightSpread={0.9}
             rayLength={1.5}
@@ -71,19 +71,19 @@ export function ContactSection() {
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(2.25rem, 5.5vw, 4rem)',
                 fontWeight: 900,
-                color: '#ffffff',
+                color: 'var(--text)',
                 lineHeight: 1.05,
                 letterSpacing: '-0.02em',
                 marginBottom: '20px',
                 textTransform: 'uppercase',
-                textShadow: '0 0 30px rgba(0, 0, 0, 0.8)',
+                textShadow: '0 0 30px rgba(var(--shadow-rgb), 0.8)',
               }}
             >
               LET'S BUILD <br />
               SOMETHING USEFUL.
             </h2>
 
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.6, textShadow: '0 0 20px rgba(0, 0, 0, 0.9)' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.6, textShadow: '0 0 20px rgba(var(--shadow-rgb), 0.9)' }}>
               {contact.subheading}
             </p>
           </div>

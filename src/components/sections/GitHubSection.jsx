@@ -10,7 +10,7 @@ export function GitHubSection() {
       id="github"
       style={{
         padding: '80px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -23,12 +23,12 @@ export function GitHubSection() {
         <GlassPanel
           style={{
             padding: 'clamp(2rem, 5vw, 3.5rem)',
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'rgba(var(--glass-rgb), 0.04)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(var(--glass-rgb), 0.12)',
             borderRadius: '24px',
-            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 16px 40px rgba(var(--shadow-rgb), 0.3)',
           }}
         >
           <div
@@ -46,9 +46,9 @@ export function GitHubSection() {
                 gap: '12px',
                 padding: '8px 16px',
                 borderRadius: '9999px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#ffffff',
+                background: 'rgba(var(--glass-rgb), 0.04)',
+                border: '1px solid rgba(var(--glass-rgb), 0.1)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.8125rem',
               }}
@@ -62,7 +62,7 @@ export function GitHubSection() {
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(2rem, 5vw, 3.5rem)',
                 fontWeight: 800,
-                color: '#ffffff',
+                color: 'var(--text)',
                 lineHeight: 1.1,
               }}
             >

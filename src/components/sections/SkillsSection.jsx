@@ -27,29 +27,29 @@ import {
 } from 'lucide-react';
 
 const skillItems = [
-  { id: 'html', title: 'HTML', icon: <FileCode size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'css', title: 'CSS', icon: <Code size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'javascript', title: 'JavaScript', icon: <Code2 size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'react', title: 'React', icon: <Atom size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'python', title: 'Python Basics', icon: <Terminal size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'firebase', title: 'Firebase', icon: <Flame size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'mongodb', title: 'MongoDB', icon: <Database size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'api', title: 'API Integration', icon: <Webhook size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'unity', title: 'Unity', icon: <Box size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'unreal', title: 'Unreal Engine', icon: <Gamepad2 size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'blender', title: 'Blender', icon: <Shapes size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'maya', title: 'Maya', icon: <Layers size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'figma', title: 'Figma', icon: <Figma size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'vscode', title: 'VS Code', icon: <Laptop size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'antigravity', title: 'Antigravity', icon: <Zap size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'canva', title: 'Canva', icon: <Palette size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'git', title: 'Git', icon: <GitBranch size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'github', title: 'GitHub', icon: <Github size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'problem-solving', title: 'Problem Solving', icon: <Puzzle size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'communication', title: 'Communication', icon: <MessageSquare size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'teamwork', title: 'Teamwork', icon: <Users size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'creativity', title: 'Creativity', icon: <Sparkles size={34} strokeWidth={2} color="#ffffff" /> },
-  { id: 'adaptability', title: 'Adaptability', icon: <RefreshCw size={34} strokeWidth={2} color="#ffffff" /> },
+  { id: 'html', title: 'HTML', icon: <FileCode size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'css', title: 'CSS', icon: <Code size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'javascript', title: 'JavaScript', icon: <Code2 size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'react', title: 'React', icon: <Atom size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'python', title: 'Python Basics', icon: <Terminal size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'firebase', title: 'Firebase', icon: <Flame size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'mongodb', title: 'MongoDB', icon: <Database size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'api', title: 'API Integration', icon: <Webhook size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'unity', title: 'Unity', icon: <Box size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'unreal', title: 'Unreal Engine', icon: <Gamepad2 size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'blender', title: 'Blender', icon: <Shapes size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'maya', title: 'Maya', icon: <Layers size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'figma', title: 'Figma', icon: <Figma size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'vscode', title: 'VS Code', icon: <Laptop size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'antigravity', title: 'Antigravity', icon: <Zap size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'canva', title: 'Canva', icon: <Palette size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'git', title: 'Git', icon: <GitBranch size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'github', title: 'GitHub', icon: <Github size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'problem-solving', title: 'Problem Solving', icon: <Puzzle size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'communication', title: 'Communication', icon: <MessageSquare size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'teamwork', title: 'Teamwork', icon: <Users size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'creativity', title: 'Creativity', icon: <Sparkles size={34} strokeWidth={2} color="var(--text)" /> },
+  { id: 'adaptability', title: 'Adaptability', icon: <RefreshCw size={34} strokeWidth={2} color="var(--text)" /> },
 ];
 
 export function SkillsSection() {
@@ -58,7 +58,7 @@ export function SkillsSection() {
       id="skills"
       style={{
         padding: '100px 0 80px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -92,9 +92,9 @@ export function SkillsSection() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0) 70%)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(var(--glass-rgb), 0.04) 0%, rgba(var(--shadow-rgb), 0) 70%)',
             borderRadius: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(var(--glass-rgb), 0.1)',
             overflow: 'hidden',
           }}
         >

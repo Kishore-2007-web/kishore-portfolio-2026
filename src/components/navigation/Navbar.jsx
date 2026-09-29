@@ -55,8 +55,8 @@ export function Navbar() {
           padding: '0 24px',
           pointerEvents: 'auto',
           borderRadius: '9999px',
-          borderColor: scrolled ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.1)',
-          background: scrolled ? 'rgba(0, 0, 0, 0.75)' : 'rgba(255, 255, 255, 0.035)',
+          borderColor: scrolled ? 'rgba(var(--glass-rgb), 0.18)' : 'rgba(var(--glass-rgb), 0.1)',
+          background: scrolled ? 'rgba(var(--shadow-rgb), 0.75)' : 'rgba(var(--glass-rgb), 0.035)',
         }}
       >
         {/* Brand Logo */}
@@ -67,7 +67,7 @@ export function Navbar() {
             fontWeight: 800,
             fontSize: '1.125rem',
             letterSpacing: '0.12em',
-            color: '#ffffff',
+            color: 'var(--text)',
             textDecoration: 'none',
           }}
         >
@@ -105,7 +105,7 @@ export function Navbar() {
                   fontSize: '0.8125rem',
                   fontWeight: 500,
                   letterSpacing: '0.05em',
-                  color: isActive ? '#ffffff' : 'var(--text-muted)',
+                  color: isActive ? 'var(--text)' : 'var(--text-muted)',
                   textDecoration: 'none',
                   position: 'relative',
                   padding: '4px 0',
@@ -122,8 +122,8 @@ export function Navbar() {
                       right: 0,
                       height: '2px',
                       borderRadius: '1px',
-                      background: '#ffffff',
-                      boxShadow: '0 0 8px rgba(255, 255, 255, 0.8)',
+                      background: 'var(--text)',
+                      boxShadow: '0 0 8px rgba(var(--glass-rgb), 0.8)',
                     }}
                   />
                 )}
@@ -140,7 +140,7 @@ export function Navbar() {
           style={{
             background: 'none',
             border: 'none',
-            color: '#ffffff',
+            color: 'var(--text)',
             cursor: 'pointer',
             padding: '4px',
           }}
@@ -180,10 +180,10 @@ export function Navbar() {
                   fontFamily: 'var(--font-display)',
                   fontSize: '1.25rem',
                   fontWeight: 600,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   textDecoration: 'none',
                   padding: '8px 0',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderBottom: '1px solid rgba(var(--glass-rgb), 0.05)',
                 }}
               >
                 {link.label}

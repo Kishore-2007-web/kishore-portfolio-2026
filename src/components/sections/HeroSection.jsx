@@ -30,16 +30,16 @@ export function HeroSection({ onOpenResume }) {
           justifyContent: 'center',
           paddingTop: 'var(--header-height)',
           overflow: 'hidden',
-          background: '#000000',
+          background: 'var(--bg)',
         }}
       >
         {/* ReactBits WebGPU AeroShards Background Visual */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
           <WebGLErrorBoundary minHeight="100vh">
             <AeroShards
-              backgroundColor="#000000"
-              shardColor="#ffffff"
-              accentColor="#ffffff"
+              backgroundColor="var(--bg)"
+              shardColor="var(--text)"
+              accentColor="var(--text)"
               placement="full"
               flow="stream"
               material="pearl"
@@ -105,7 +105,7 @@ export function HeroSection({ onOpenResume }) {
                 fontWeight: 900,
                 lineHeight: 1.05,
                 letterSpacing: '-0.03em',
-                color: '#ffffff',
+                color: 'var(--text)',
                 marginBottom: '24px',
                 textTransform: 'uppercase',
               }}

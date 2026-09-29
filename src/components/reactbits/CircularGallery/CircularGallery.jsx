@@ -114,6 +114,16 @@ function getFontSize(font) {
   return match ? parseInt(match[1], 10) : 30;
 }
 
+function getComputedColor(colorString) {
+  if (typeof colorString === 'string' && colorString.startsWith('var(')) {
+    const varName = colorString.match(/var\((--[^)]+)\)/);
+    if (varName && varName[1]) {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName[1]).trim() || 'white';
+    }
+  }
+  return colorString;
+}
+
 function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'black') {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -124,7 +134,7 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   canvas.width = textWidth + 20;
   canvas.height = textHeight + 20;
   context.font = font;
-  context.fillStyle = color;
+  context.fillStyle = getComputedColor(color);
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -378,7 +388,7 @@ class App {
     {
       items,
       bend,
-      textColor = '#ffffff',
+      textColor = 'var(--text)',
       borderRadius = 0,
       font = 'bold 30px Figtree',
       scrollSpeed = 2,
@@ -646,7 +656,7 @@ class App {
 export function CircularGallery({
   items,
   bend = 3,
-  textColor = '#ffffff',
+  textColor = 'var(--text)',
   borderRadius = 0.05,
   font = 'bold 30px Figtree',
   fontUrl,

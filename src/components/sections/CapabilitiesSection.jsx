@@ -18,7 +18,7 @@ export function CapabilitiesSection() {
       id="capabilities"
       style={{
         padding: '80px 0',
-        background: '#000000',
+        background: 'var(--bg)',
       }}
     >
       <div className="container">
@@ -62,9 +62,9 @@ export function CapabilitiesSection() {
                     style={{
                       padding: '10px',
                       borderRadius: '10px',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      color: '#ffffff',
+                      background: 'rgba(var(--glass-rgb), 0.04)',
+                      border: '1px solid rgba(var(--glass-rgb), 0.08)',
+                      color: 'var(--text)',
                     }}
                   >
                     <IconComponent size={22} />
@@ -77,7 +77,7 @@ export function CapabilitiesSection() {
                     fontSize: '1.25rem',
                     fontWeight: 700,
                     marginBottom: '12px',
-                    color: '#ffffff',
+                    color: 'var(--text)',
                     letterSpacing: '0.02em',
                   }}
                 >

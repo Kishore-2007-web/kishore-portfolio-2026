@@ -259,13 +259,13 @@ const InfiniteSpiral = ({
                     justifyContent: 'center',
                     padding: '10px 6px',
                     textAlign: 'center',
-                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                    background: 'linear-gradient(135deg, rgba(var(--glass-rgb), 0.12) 0%, rgba(var(--glass-rgb), 0.03) 100%)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(255, 255, 255, 0.22)',
+                    border: '1px solid rgba(var(--glass-rgb), 0.22)',
                     borderRadius: `${cardRadius}px`,
-                    boxShadow: '0 14px 36px 0 rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3)',
-                    color: '#ffffff',
+                    boxShadow: '0 14px 36px 0 rgba(var(--shadow-rgb), 0.55), inset 0 1px 1px 0 rgba(var(--glass-rgb), 0.3)',
+                    color: 'var(--text)',
                     boxSizing: 'border-box',
                     userSelect: 'none',
                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
@@ -278,8 +278,8 @@ const InfiniteSpiral = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#ffffff',
-                        filter: 'drop-shadow(0 0 12px rgba(255, 255, 255, 0.4))'
+                        color: 'var(--text)',
+                        filter: 'drop-shadow(0 0 12px rgba(var(--glass-rgb), 0.4))'
                       }}
                     >
                       {item.icon}
@@ -293,11 +293,11 @@ const InfiniteSpiral = ({
                         fontWeight: 700,
                         letterSpacing: '0.06em',
                         lineHeight: 1.18,
-                        color: '#ffffff',
+                        color: 'var(--text)',
                         textTransform: 'uppercase',
                         wordBreak: 'break-word',
                         maxWidth: '95%',
-                        textShadow: '0 2px 6px rgba(0, 0, 0, 0.8)'
+                        textShadow: '0 2px 6px rgba(var(--shadow-rgb), 0.8)'
                       }}
                     >
                       {item.title}

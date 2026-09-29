@@ -3,7 +3,7 @@ import CurvedLoop from '../ui/CurvedLoop/CurvedLoop';
 
 export function CurvedLoopSection() {
   return (
-    <section style={{ width: '100%', background: '#000000', overflow: 'hidden', padding: '1rem 0' }}>
+    <section style={{ width: '100%', background: 'var(--bg)', overflow: 'hidden', padding: '1rem 0' }}>
       <CurvedLoop
         marqueeText="WEB • UI/UX DESIGN • SOFTWARE • AI • GAME DEVELOPMENT • 3D • BUILD WITH PURPOSE • "
         speed={1.5}

@@ -38,9 +38,9 @@ export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectI
               style={{
                 padding: '10px 20px',
                 borderRadius: '9999px',
-                background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                border: `1px solid ${isActive ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.08)'}`,
-                color: isActive ? '#ffffff' : 'var(--text-muted)',
+                background: isActive ? 'rgba(var(--glass-rgb), 0.12)' : 'rgba(var(--glass-rgb), 0.03)',
+                border: `1px solid ${isActive ? 'rgba(var(--glass-rgb), 1)' : 'rgba(var(--glass-rgb), 0.08)'}`,
+                color: isActive ? 'var(--text)' : 'var(--text-muted)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.8125rem',
                 fontWeight: 600,
@@ -73,7 +73,7 @@ export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectI
                 fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
                 fontWeight: 700,
                 marginBottom: '12px',
-                color: '#ffffff',
+                color: 'var(--text)',
               }}
             >
               {activeItem.title}
@@ -92,8 +92,8 @@ export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectI
                     style={{
                       padding: '4px 10px',
                       borderRadius: '4px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(var(--glass-rgb), 0.05)',
+                      border: '1px solid rgba(var(--glass-rgb), 0.1)',
                       fontSize: '0.75rem',
                       fontFamily: 'var(--font-mono)',
                       color: 'var(--text-muted)',
@@ -137,8 +137,8 @@ export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectI
               position: 'relative',
               borderRadius: '12px',
               overflow: 'hidden',
-              background: 'rgba(0, 0, 0, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'rgba(var(--shadow-rgb), 0.6)',
+              border: '1px solid rgba(var(--glass-rgb), 0.1)',
               aspectRatio: '16/10',
               display: 'flex',
               alignItems: 'center',
@@ -157,7 +157,7 @@ export function InfiniteMenu({ items = [], activeIndex: externalIndex, onSelectI
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px)',
+                    backgroundImage: 'radial-gradient(rgba(var(--glass-rgb), 0.12) 1px, transparent 1px)',
                     backgroundSize: '16px 16px',
                     opacity: 0.3,
                   }}

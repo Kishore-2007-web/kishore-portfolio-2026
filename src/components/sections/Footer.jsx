@@ -7,8 +7,8 @@ export function Footer() {
       style={{
         position: 'relative',
         padding: '60px 0 40px 0',
-        background: '#000000',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'var(--bg)',
+        borderTop: '1px solid rgba(var(--glass-rgb), 0.08)',
         overflow: 'hidden',
       }}
     >
@@ -23,7 +23,7 @@ export function Footer() {
         }}
       >
         <PixelSnow
-          color="#ffffff"
+          color="var(--text)"
           flakeSize={0.014}
           minFlakeSize={1.25}
           pixelResolution={500}
@@ -44,7 +44,7 @@ export function Footer() {
             fontWeight: 800,
             fontSize: '1.25rem',
             letterSpacing: '0.15em',
-            color: '#ffffff',
+            color: 'var(--text)',
             marginBottom: '12px',
           }}
         >

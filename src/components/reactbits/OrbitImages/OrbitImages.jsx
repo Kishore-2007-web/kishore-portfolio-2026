@@ -131,7 +131,7 @@ export default function OrbitImages({
   height = 100,
   className = '',
   showPath = false,
-  pathColor = 'rgba(0,0,0,0.1)',
+  pathColor = 'rgba(var(--shadow-rgb),0.1)',
   pathWidth = 2,
   easing = 'linear',
   paused = false,

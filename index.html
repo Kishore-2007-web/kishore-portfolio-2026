@@ -26,19 +26,38 @@
     />
 
     <style>
+      :root {
+        --bg: #000000;
+        --text: #ffffff;
+      }
+      :root[data-theme="white"] {
+        --bg: #ffffff;
+        --text: #000000;
+      }
       html, body {
         margin: 0;
         padding: 0;
-        background-color: #000000;
-        color: #ffffff;
+        background-color: var(--bg);
+        color: var(--text);
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
         overflow-x: hidden;
       }
       #root {
         min-height: 100vh;
-        background-color: #000000;
+        background-color: var(--bg);
       }
     </style>
+    <script>
+      (function() {
+        try {
+          var current = localStorage.getItem('portfolio-theme-mode');
+          // Start with black if null, then alternate
+          var nextTheme = current === 'white' ? 'black' : (current === 'black' ? 'white' : 'black');
+          localStorage.setItem('portfolio-theme-mode', nextTheme);
+          document.documentElement.setAttribute('data-theme', nextTheme);
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

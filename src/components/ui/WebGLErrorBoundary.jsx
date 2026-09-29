@@ -38,7 +38,7 @@ export class WebGLErrorBoundary extends React.Component {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px)',
+              backgroundImage: 'radial-gradient(rgba(var(--glass-rgb), 0.08) 1px, transparent 1px)',
               backgroundSize: '24px 24px',
               opacity: 0.4,
             }}

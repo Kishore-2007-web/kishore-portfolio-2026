@@ -47,7 +47,7 @@ export function ShapeBlur({ className = '' }) {
 
         const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
         grad.addColorStop(0, s.color);
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(1, 'rgba(var(--shadow-rgb), 0)');
 
         ctx.fillStyle = grad;
         ctx.beginPath();

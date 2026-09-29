@@ -37,8 +37,8 @@ export function CircularGallery({ items = labItems }) {
               <GlassCard
                 style={{
                   padding: '16px',
-                  borderColor: isSelected ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.08)',
-                  background: isSelected ? 'rgba(255, 255, 255, 0.07)' : 'rgba(255, 255, 255, 0.02)',
+                  borderColor: isSelected ? 'rgba(var(--glass-rgb), 0.35)' : 'rgba(var(--glass-rgb), 0.08)',
+                  background: isSelected ? 'rgba(var(--glass-rgb), 0.07)' : 'rgba(var(--glass-rgb), 0.02)',
                   transform: isSelected ? 'scale(1.02)' : 'scale(1)',
                   transition: 'all 0.3s ease',
                 }}
@@ -51,7 +51,7 @@ export function CircularGallery({ items = labItems }) {
                     overflow: 'hidden',
                     marginBottom: '12px',
                     position: 'relative',
-                    background: '#111111',
+                    background: 'var(--bg-card)',
                   }}
                 >
                   <img
@@ -72,7 +72,7 @@ export function CircularGallery({ items = labItems }) {
                       right: '8px',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      background: 'rgba(0,0,0,0.7)',
+                      background: 'rgba(var(--shadow-rgb),0.7)',
                       backdropFilter: 'blur(4px)',
                       fontSize: '0.6875rem',
                       fontFamily: 'var(--font-mono)',
@@ -86,7 +86,7 @@ export function CircularGallery({ items = labItems }) {
                 <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
                   {item.category}
                 </div>
-                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, color: '#ffffff' }}>
+                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, color: 'var(--text)' }}>
                   {item.title}
                 </h4>
               </GlassCard>
@@ -102,8 +102,8 @@ export function CircularGallery({ items = labItems }) {
             marginTop: '16px',
             padding: '20px 24px',
             borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'rgba(var(--glass-rgb), 0.02)',
+            border: '1px solid rgba(var(--glass-rgb), 0.08)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -123,10 +123,10 @@ export function CircularGallery({ items = labItems }) {
             style={{
               padding: '6px 12px',
               borderRadius: '9999px',
-              border: '1px solid rgba(255,255,255,0.15)',
+              border: '1px solid rgba(var(--glass-rgb),0.15)',
               fontSize: '0.75rem',
               fontFamily: 'var(--font-mono)',
-              color: '#ffffff',
+              color: 'var(--text)',
             }}
           >
             ● RESEARCH PROTOTYPE

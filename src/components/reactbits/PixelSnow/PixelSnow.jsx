@@ -172,7 +172,7 @@ void main() {
 `;
 
 export default function PixelSnow({
-  color = '#ffffff',
+  color = 'var(--text)',
   flakeSize = 0.01,
   minFlakeSize = 1.25,
   pixelResolution = 200,

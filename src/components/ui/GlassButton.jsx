@@ -23,24 +23,24 @@ export function GlassButton({
       rel={rel}
       className={className}
       style={{
-        background: isPrimary ? '#ffffff' : 'rgba(255, 255, 255, 0.06)',
-        border: isPrimary ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.2)',
+        background: isPrimary ? 'var(--text)' : 'rgba(var(--glass-rgb), 0.06)',
+        border: isPrimary ? '1px solid var(--text)' : '1px solid rgba(var(--glass-rgb), 0.2)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        color: isPrimary ? '#000000' : '#ffffff',
+        color: isPrimary ? 'var(--bg)' : 'var(--text)',
         fontWeight: isPrimary ? 700 : 600,
         boxShadow: isPrimary
-          ? '0 4px 20px rgba(255, 255, 255, 0.3)'
-          : '0 4px 20px rgba(0, 0, 0, 0.4)',
+          ? '0 4px 20px rgba(var(--glass-rgb), 0.3)'
+          : '0 4px 20px rgba(var(--shadow-rgb), 0.4)',
         ...style
       }}
       size={size}
       radius={9999}
-      tint="#ffffff"
+      tint="var(--text)"
       tintOpacity={isPrimary ? 0.2 : 0.04}
       blur={12}
-      textColor={isPrimary ? '#000000' : '#ffffff'}
-      lineColor={isPrimary ? '#ffffff' : '#ffffff'}
+      textColor={isPrimary ? 'var(--bg)' : 'var(--text)'}
+      lineColor={isPrimary ? 'var(--text)' : 'var(--text)'}
       baseColor={isPrimary ? '#dddddd' : '#444444'}
       intensity={isPrimary ? 1.4 : 1.0}
       shineSize={isPrimary ? 20 : 12}

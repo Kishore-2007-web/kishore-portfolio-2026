@@ -43,7 +43,7 @@ export function LabSection() {
       id="lab"
       style={{
         padding: '100px 0 80px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -76,8 +76,8 @@ export function LabSection() {
             height: '520px',
             minHeight: '420px',
             borderRadius: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.95) 75%)',
+            border: '1px solid rgba(var(--glass-rgb), 0.1)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(var(--glass-rgb), 0.03) 0%, rgba(var(--shadow-rgb), 0.95) 75%)',
             overflow: 'hidden',
           }}
         >
@@ -85,7 +85,7 @@ export function LabSection() {
             <CircularGallery
               items={rawLabItems}
               bend={2}
-              textColor="#ffffff"
+              textColor="var(--text)"
               borderRadius={0.12}
               scrollEase={0.07}
               fontUrl="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
@@ -105,8 +105,8 @@ export function LabSection() {
             marginTop: '32px',
             padding: '24px 32px',
             borderRadius: '16px',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'rgba(var(--glass-rgb), 0.02)',
+            border: '1px solid rgba(var(--glass-rgb), 0.08)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -125,7 +125,7 @@ export function LabSection() {
                 {activeItem.category}
               </span>
             </div>
-            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#ffffff', marginBottom: '8px' }}>
+            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>
               {activeItem.title}
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', lineHeight: 1.5 }}>
@@ -142,9 +142,9 @@ export function LabSection() {
                       fontFamily: 'var(--font-mono)',
                       color: '#a1a1aa',
                       padding: '4px 8px',
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: 'rgba(var(--glass-rgb), 0.03)',
                       borderRadius: '4px',
-                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(var(--glass-rgb), 0.05)',
                     }}
                   >
                     {tech}
@@ -161,19 +161,19 @@ export function LabSection() {
               style={{
                 padding: '8px 16px',
                 borderRadius: '9999px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#ffffff',
+                background: 'rgba(var(--glass-rgb), 0.05)',
+                border: '1px solid rgba(var(--glass-rgb), 0.15)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.75rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.1)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.05)';
               }}
             >
               INSPECT DETAILS →
@@ -194,7 +194,7 @@ export function LabSection() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '24px',
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backgroundColor: 'rgba(var(--shadow-rgb), 0.85)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             animation: 'fadeIn 0.25s ease-out',
@@ -217,8 +217,8 @@ export function LabSection() {
               style={{
                 padding: 'clamp(1.5rem, 4vw, 2.5rem)',
                 background: 'rgba(12, 12, 16, 0.92)',
-                border: '1px solid rgba(255, 255, 255, 0.18)',
-                boxShadow: '0 24px 48px rgba(0, 0, 0, 0.6), 0 0 40px rgba(103, 232, 249, 0.15)',
+                border: '1px solid rgba(var(--glass-rgb), 0.18)',
+                boxShadow: '0 24px 48px rgba(var(--shadow-rgb), 0.6), 0 0 40px rgba(103, 232, 249, 0.15)',
               }}
             >
               {/* Close Button */}
@@ -232,9 +232,9 @@ export function LabSection() {
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#ffffff',
+                  background: 'rgba(var(--glass-rgb), 0.08)',
+                  border: '1px solid rgba(var(--glass-rgb), 0.15)',
+                  color: 'var(--text)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -243,11 +243,11 @@ export function LabSection() {
                   zIndex: 10,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.2)';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.background = 'rgba(var(--glass-rgb), 0.08)';
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
@@ -263,8 +263,8 @@ export function LabSection() {
                   overflow: 'hidden',
                   marginBottom: '24px',
                   position: 'relative',
-                  background: '#111111',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid rgba(var(--glass-rgb), 0.1)',
                 }}
               >
                 <img
@@ -307,7 +307,7 @@ export function LabSection() {
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)',
                   fontWeight: 800,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   marginBottom: '16px',
                   letterSpacing: '-0.02em',
                 }}
@@ -385,11 +385,11 @@ export function LabSection() {
                         style={{
                           padding: '6px 12px',
                           borderRadius: '6px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          background: 'rgba(var(--glass-rgb), 0.05)',
+                          border: '1px solid rgba(var(--glass-rgb), 0.1)',
                           fontSize: '0.8125rem',
                           fontFamily: 'var(--font-mono)',
-                          color: '#ffffff',
+                          color: 'var(--text)',
                         }}
                       >
                         {tech}
@@ -400,7 +400,7 @@ export function LabSection() {
               )}
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', paddingTop: '12px', borderTop: '1px solid rgba(var(--glass-rgb), 0.08)' }}>
                 {selectedExperiment.github && (
                   <GlassButton href={selectedExperiment.github} variant="primary">
                     <Github size={16} />
@@ -420,15 +420,15 @@ export function LabSection() {
                     padding: '10px 20px',
                     borderRadius: '9999px',
                     background: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    border: '1px solid rgba(var(--glass-rgb), 0.15)',
                     color: 'var(--text-secondary)',
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.8125rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--text)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(var(--glass-rgb), 0.15)')}
                 >
                   CLOSE [ESC]
                 </button>

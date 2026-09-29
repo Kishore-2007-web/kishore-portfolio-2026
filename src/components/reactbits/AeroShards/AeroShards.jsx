@@ -1046,7 +1046,15 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location
 
 const parseColor = (value, fallback) => {
   if (typeof value === 'string') {
-    const hex = value.replace('#', '').trim();
+    let hex = value.trim();
+    if (hex.startsWith('var(')) {
+      const varName = hex.match(/var\((--[^)]+)\)/);
+      if (varName && varName[1] && typeof document !== 'undefined') {
+        const computed = getComputedStyle(document.documentElement).getPropertyValue(varName[1]).trim();
+        if (computed) hex = computed;
+      }
+    }
+    hex = hex.replace('#', '').trim();
     if (hex.length === 3) {
       const r = parseInt(hex[0] + hex[0], 16) / 255;
       const g = parseInt(hex[1] + hex[1], 16) / 255;

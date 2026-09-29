@@ -11,7 +11,7 @@ export function AboutSection() {
       id="about"
       style={{
         padding: '100px 0 60px 0',
-        background: '#000000',
+        background: 'var(--bg)',
         position: 'relative',
       }}
     >
@@ -38,7 +38,7 @@ export function AboutSection() {
                 <p
                   key={index}
                   style={{
-                    color: index === 0 ? '#ffffff' : 'var(--text-secondary)',
+                    color: index === 0 ? 'var(--text)' : 'var(--text-secondary)',
                     fontWeight: index === 0 ? 600 : 400,
                     fontSize: index === 0 ? '1.125rem' : '1rem',
                     lineHeight: 1.7,

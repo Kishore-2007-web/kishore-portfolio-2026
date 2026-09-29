@@ -12,7 +12,7 @@
   --dw-lift: 64px;
   --dw-dim: 0.9;
   --dw-gray: 1;
-  --dw-overlay: #000000;
+  --dw-overlay: var(--bg);
   --dw-edge: 40%;
   -webkit-mask-image:
     radial-gradient(ellipse 85% 88% at 50% 46%, #000 var(--dw-edge), transparent 100%),
@@ -71,8 +71,8 @@
   display: block;
   border-radius: var(--dw-radius);
   overflow: hidden;
-  background: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: var(--bg);
+  border: 1px solid rgba(var(--glass-rgb), 0.25);
   opacity: var(--dw-dim);
   transform: translateZ(0);
   pointer-events: none;
@@ -106,9 +106,9 @@
 .drift-wall__tile.is-active .drift-wall__inner,
 .drift-wall__tile:focus-visible .drift-wall__inner {
   opacity: 1;
-  border-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(var(--glass-rgb), 0.9);
   transform: translateZ(var(--dw-lift));
-  box-shadow: 0 24px 60px -12px rgba(255, 255, 255, 0.25), 0 0 30px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 24px 60px -12px rgba(var(--glass-rgb), 0.25), 0 0 30px rgba(var(--glass-rgb), 0.15);
 }
 
 .drift-wall__tile.is-active img,
@@ -123,8 +123,8 @@
 
 .drift-wall__tile:focus-visible .drift-wall__inner {
   box-shadow:
-    0 24px 60px -12px rgba(255, 255, 255, 0.3),
-    0 0 0 2px rgba(255, 255, 255, 1);
+    0 24px 60px -12px rgba(var(--glass-rgb), 0.3),
+    0 0 0 2px rgba(var(--glass-rgb), 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

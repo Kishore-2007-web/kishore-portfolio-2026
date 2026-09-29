@@ -39,6 +39,9 @@ export function Particles({ count = 35, className = '' }) {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const glassRGB = currentTheme === 'white' ? '0, 0, 0' : '255, 255, 255';
+
       particles.forEach((p) => {
         p.x += p.speedX;
         p.y += p.speedY;
@@ -48,7 +51,7 @@ export function Particles({ count = 35, className = '' }) {
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.fillStyle = `rgba(${glassRGB}, ${p.alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
