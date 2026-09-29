@@ -11,6 +11,10 @@ export function MaskedHeading({ text = "THE LAB" }) {
         position: 'relative',
         display: 'inline-block',
         margin: '1.5rem 0',
+        filter: 'drop-shadow(0 10px 30px rgba(var(--shadow-rgb),0.15))',
+        opacity: isInView ? 1 : 0,
+        transform: isInView ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
       <h2
@@ -24,10 +28,7 @@ export function MaskedHeading({ text = "THE LAB" }) {
           background: 'linear-gradient(135deg, var(--text) 0%, var(--text-muted) 50%, var(--text) 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          filter: 'drop-shadow(0 10px 30px rgba(var(--shadow-rgb),0.8))',
-          opacity: isInView ? 1 : 0,
-          transform: isInView ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+          margin: 0,
         }}
       >
         {text}

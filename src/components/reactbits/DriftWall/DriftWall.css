@@ -133,3 +133,12 @@
     will-change: auto;
   }
 }
+
+html[data-theme='white'] .drift-wall__tile img {
+  filter: invert(1) grayscale(100%) contrast(1.15) brightness(1.15);
+}
+
+html[data-theme='white'] .drift-wall__tile.is-active img,
+html[data-theme='white'] .drift-wall__tile:focus-visible img {
+  filter: invert(1) grayscale(100%) contrast(1.25) brightness(1.3);
+}

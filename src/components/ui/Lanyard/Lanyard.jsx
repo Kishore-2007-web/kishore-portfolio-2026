@@ -202,16 +202,16 @@ function Band({
 
       // Bottom gradient
       const botGrad = ctx.createLinearGradient(rx, ry + rh * 0.65, rx, ry + rh);
-      botGrad.addColorStop(0, 'rgba(var(--shadow-rgb),0)');
-      botGrad.addColorStop(0.5, 'rgba(var(--shadow-rgb),0.75)');
-      botGrad.addColorStop(1, 'rgba(var(--shadow-rgb),0.95)');
+      botGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      botGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.75)');
+      botGrad.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
       ctx.fillStyle = botGrad;
       ctx.fillRect(rx, ry + rh * 0.65, rw, rh * 0.35);
 
       // Top gradient
       const topGrad = ctx.createLinearGradient(rx, ry, rx, ry + rh * 0.15);
-      topGrad.addColorStop(0, 'rgba(var(--shadow-rgb),0.6)');
-      topGrad.addColorStop(1, 'rgba(var(--shadow-rgb),0)');
+      topGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+      topGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = topGrad;
       ctx.fillRect(rx, ry, rw, rh * 0.15);
 

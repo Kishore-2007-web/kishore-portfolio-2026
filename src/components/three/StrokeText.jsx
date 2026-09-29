@@ -4,7 +4,7 @@ import gsap from 'gsap';
 export function StrokeText({
   text = "PURPOSE OVER FANCY.",
   strokeColor = "var(--text)",
-  fillColor = "#F8FAFC",
+  fillColor = "var(--text)",
   strokeWidth = 1.4,
   drawDuration = 1.6,
   fillDelay = 1.0,
