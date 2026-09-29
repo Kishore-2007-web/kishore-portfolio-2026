@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MaskedHeading } from '../three/MaskedHeading';
-import DriftWall from '../reactbits/DriftWall/DriftWall';
+import CircularGallery from '../reactbits/CircularGallery/CircularGallery';
 import { WebGLErrorBoundary } from '../ui/WebGLErrorBoundary';
 import { GlassPanel } from '../ui/GlassPanel';
 import { StatusPill } from '../ui/StatusPill';
@@ -68,43 +68,118 @@ export function LabSection() {
           </span>
         </p>
 
-        {/* DriftWall Container */}
+        {/* 3D CircularGallery Container */}
         <div
-          className="archive-driftwall"
           style={{
-            height: windowWidth < 640 ? '440px' : windowWidth < 1024 ? '520px' : '600px',
-            width: '100%',
             position: 'relative',
-            borderRadius: '20px',
+            width: '100%',
+            height: '520px',
+            minHeight: '420px',
+            borderRadius: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.95) 75%)',
             overflow: 'hidden',
-            background: '#000000',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            boxShadow: '0 0 40px rgba(255, 255, 255, 0.05)',
           }}
         >
-          <DriftWall
-            items={rawLabItems}
-            columns={windowWidth < 640 ? 2 : windowWidth < 1024 ? 3 : 5}
-            tileWidth={windowWidth < 640 ? 140 : windowWidth < 1024 ? 170 : 200}
-            tileHeight={windowWidth < 640 ? 92 : windowWidth < 1024 ? 112 : 132}
-            gap={windowWidth < 640 ? 12 : windowWidth < 1024 ? 14 : 18}
-            tilt={0}
-            turn={0}
-            perspective={1200}
-            depth={0}
-            speed={28}
-            direction="up"
-            variance={0.2}
-            parallax={0.3}
-            lift={28}
-            fade={0.4}
-            dim={0.85}
-            grayscale={true}
-            overlayColor="#000000"
-            onTileClick={(item) => setSelectedExperiment(item)}
-          />
+          <WebGLErrorBoundary height="520px">
+            <CircularGallery
+              items={rawLabItems}
+              bend={2}
+              textColor="#ffffff"
+              borderRadius={0.12}
+              scrollEase={0.07}
+              fontUrl="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+              font="bold 30px Orbitron"
+              scrollSpeed={1.3}
+              autoSpin={true}
+              autoSpinSpeed={0.8}
+              onItemClick={setSelectedExperiment}
+              onActiveItemChange={setActiveDisplayIndex}
+            />
+          </WebGLErrorBoundary>
         </div>
 
+        {/* Dynamic Project Details Display */}
+        <div
+          style={{
+            marginTop: '32px',
+            padding: '24px 32px',
+            borderRadius: '16px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '24px',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <div style={{ flex: '1 1 300px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                LAB EXPERIMENT 0{activeItem.id}
+              </span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>•</span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                {activeItem.category}
+              </span>
+            </div>
+            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#ffffff', marginBottom: '8px' }}>
+              {activeItem.title}
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', lineHeight: 1.5 }}>
+              {activeItem.description}
+            </p>
+            
+            {activeItem.technologies && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '16px' }}>
+                {activeItem.technologies.slice(0, 4).map((tech, tIdx) => (
+                  <span
+                    key={tIdx}
+                    style={{
+                      fontSize: '0.6875rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: '#a1a1aa',
+                      padding: '4px 8px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      borderRadius: '4px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
+            <StatusPill status={activeItem.status || 'RESEARCH PROTOTYPE'} />
+            <button
+              onClick={() => setSelectedExperiment(activeItem)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              }}
+            >
+              INSPECT DETAILS →
+            </button>
+          </div>
+        </div>
 
       </div>
 
