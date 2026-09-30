@@ -73,26 +73,26 @@ export function LabSection() {
           style={{
             position: 'relative',
             width: '100%',
-            height: '520px',
-            minHeight: '420px',
+            height: '560px',
+            minHeight: '460px',
             borderRadius: '24px',
             border: '1px solid rgba(var(--glass-rgb), 0.1)',
             background: 'radial-gradient(circle at 50% 50%, rgba(var(--glass-rgb), 0.03) 0%, rgba(var(--shadow-rgb), 0.95) 75%)',
             overflow: 'hidden',
           }}
         >
-          <WebGLErrorBoundary height="520px">
+          <WebGLErrorBoundary height="560px">
             <CircularGallery
               items={rawLabItems}
-              bend={1.8}
+              bend={1.6}
               textColor="var(--text)"
-              borderRadius={0.06}
+              borderRadius={0.07}
               scrollEase={0.07}
               scrollSpeed={1.3}
               autoSpin={true}
               autoSpinSpeed={0.8}
-              planeWidth={460}
-              planeHeight={304}
+              planeWidth={520}
+              planeHeight={416}
               onItemClick={setSelectedExperiment}
               onActiveItemChange={setActiveDisplayIndex}
             />

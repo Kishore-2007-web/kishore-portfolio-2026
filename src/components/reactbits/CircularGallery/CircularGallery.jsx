@@ -211,8 +211,8 @@ class Media {
     borderRadius = 0,
     font,
     rawItem,
-    planeWidth = 480,
-    planeHeight = 316
+    planeWidth = 520,
+    planeHeight = 416
   }) {
     this.extra = 0;
     this.geometry = geometry;
