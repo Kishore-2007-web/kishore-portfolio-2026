@@ -189,6 +189,16 @@ body {
   box-shadow: 0 0 25px rgba(var(--glass-rgb), 0.25);
 }
 
+.glass-button-sm {
+  padding: 8px 16px;
+  font-size: 0.8125rem;
+}
+
+.glass-button-lg {
+  padding: 16px 32px;
+  font-size: 1rem;
+}
+
 /* Editorial Typography */
 .section-tag {
   font-family: var(--font-mono);

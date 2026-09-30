@@ -1,11 +1,10 @@
 import React from 'react';
-import SpecularButton from '../reactbits/SpecularButton/SpecularButton';
 
 export function GlassButton({
   children,
   href,
   onClick,
-  variant = 'secondary',
+  variant = 'secondary', // 'primary' | 'secondary'
   className = '',
   target,
   rel,
@@ -14,46 +13,42 @@ export function GlassButton({
   ...props
 }) {
   const isPrimary = variant === 'primary';
+  const sizeClass = size === 'sm' ? 'glass-button-sm' : size === 'lg' ? 'glass-button-lg' : '';
+  const baseClass = `glass-button ${isPrimary ? 'glass-button-primary' : ''} ${sizeClass} ${className}`.trim();
+
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(e);
+    }
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const targetEl = document.querySelector(href);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={baseClass}
+        style={style}
+        onClick={handleClick}
+        target={target || (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('https://wa.me') ? '_blank' : undefined)}
+        rel={rel || (href.startsWith('http') ? 'noopener noreferrer' : undefined)}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
-    <SpecularButton
-      href={href}
-      onClick={onClick}
-      target={target}
-      rel={rel}
-      className={className}
-      style={{
-        background: isPrimary ? 'var(--text)' : 'rgba(var(--glass-rgb), 0.06)',
-        border: isPrimary ? '1px solid var(--text)' : '1px solid rgba(var(--glass-rgb), 0.2)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        color: isPrimary ? 'var(--bg)' : 'var(--text)',
-        fontWeight: isPrimary ? 700 : 600,
-        boxShadow: isPrimary
-          ? '0 4px 20px rgba(var(--glass-rgb), 0.3)'
-          : '0 4px 20px rgba(var(--shadow-rgb), 0.4)',
-        ...style
-      }}
-      size={size}
-      radius={9999}
-      tint="var(--text)"
-      tintOpacity={isPrimary ? 0.2 : 0.04}
-      blur={12}
-      textColor={isPrimary ? 'var(--bg)' : 'var(--text)'}
-      lineColor={isPrimary ? 'var(--text)' : 'var(--text)'}
-      baseColor={isPrimary ? '#dddddd' : '#444444'}
-      intensity={isPrimary ? 1.4 : 1.0}
-      shineSize={isPrimary ? 20 : 12}
-      shineFade={35}
-      thickness={1.2}
-      speed={0.4}
-      followMouse={true}
-      proximity={300}
-      autoAnimate={true}
-      {...props}
-    >
+    <button onClick={handleClick} className={baseClass} style={style} {...props}>
       {children}
-    </SpecularButton>
+    </button>
   );
 }
 
