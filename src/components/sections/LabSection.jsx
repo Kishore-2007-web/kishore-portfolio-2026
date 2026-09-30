@@ -84,15 +84,15 @@ export function LabSection() {
           <WebGLErrorBoundary height="520px">
             <CircularGallery
               items={rawLabItems}
-              bend={2}
+              bend={1.8}
               textColor="var(--text)"
-              borderRadius={0.12}
+              borderRadius={0.06}
               scrollEase={0.07}
-              fontUrl="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
-              font="bold 30px Orbitron"
               scrollSpeed={1.3}
               autoSpin={true}
               autoSpinSpeed={0.8}
+              planeWidth={460}
+              planeHeight={304}
               onItemClick={setSelectedExperiment}
               onActiveItemChange={setActiveDisplayIndex}
             />
@@ -273,7 +273,8 @@ export function LabSection() {
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
+                    background: '#050505',
                   }}
                 />
                 <div

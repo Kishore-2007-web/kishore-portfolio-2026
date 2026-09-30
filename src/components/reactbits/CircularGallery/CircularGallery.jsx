@@ -377,8 +377,10 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1000;
-    this.plane.scale.y = (this.viewport.height * (550 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (400 * this.scale)) / this.screen.width;
+    const baseW = this.planeWidth || 480;
+    const baseH = this.planeHeight || 316;
+    this.plane.scale.y = (this.viewport.height * (baseH * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (baseW * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
@@ -401,7 +403,9 @@ class App {
       onItemClick,
       onActiveItemChange,
       autoSpin = true,
-      autoSpinSpeed = 0.8
+      autoSpinSpeed = 0.8,
+      planeWidth = 480,
+      planeHeight = 316
     } = {}
   ) {
     document.documentElement.classList.remove('no-js');
@@ -412,6 +416,8 @@ class App {
     this.lastActiveIdx = -1;
     this.autoSpin = autoSpin;
     this.autoSpinSpeed = autoSpinSpeed;
+    this.planeWidth = planeWidth;
+    this.planeHeight = planeHeight;
     this.isHovered = false;
     this.rawItems = items || [];
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
@@ -422,7 +428,7 @@ class App {
     this.createScene();
     this.onResize();
     this.createGeometry();
-    this.createMedias(items, bend, textColor, borderRadius, font);
+    this.createMedias(items, bend, textColor, borderRadius, font, planeWidth, planeHeight);
     this.update();
     this.addEventListeners();
   }
@@ -450,7 +456,7 @@ class App {
       widthSegments: 100
     });
   }
-  createMedias(items, bend = 1, textColor, borderRadius, font) {
+  createMedias(items, bend = 1, textColor, borderRadius, font, planeWidth = 480, planeHeight = 316) {
     const defaultItems = [
       { image: `https://picsum.photos/seed/1/800/600?grayscale`, text: 'Bridge' },
       { image: `https://picsum.photos/seed/2/800/600?grayscale`, text: 'Desk Setup' },
@@ -473,13 +479,15 @@ class App {
         renderer: this.renderer,
         scene: this.scene,
         screen: this.screen,
-        text: data.text || data.title,
+        text: data.text !== undefined ? data.text : (data.title || ''),
         viewport: this.viewport,
         bend,
         textColor,
         borderRadius,
         font,
-        rawItem: raw
+        rawItem: raw,
+        planeWidth,
+        planeHeight
       });
     });
   }
@@ -670,7 +678,9 @@ export function CircularGallery({
   onItemClick,
   onActiveItemChange,
   autoSpin = true,
-  autoSpinSpeed = 0.8
+  autoSpinSpeed = 0.8,
+  planeWidth = 480,
+  planeHeight = 316
 }) {
   const containerRef = useRef(null);
   useEffect(() => {
@@ -690,7 +700,9 @@ export function CircularGallery({
         onItemClick,
         onActiveItemChange,
         autoSpin,
-        autoSpinSpeed
+        autoSpinSpeed,
+        planeWidth,
+        planeHeight
       });
     });
 
@@ -698,7 +710,7 @@ export function CircularGallery({
       isMounted = false;
       if (app) app.destroy();
     };
-  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick, onActiveItemChange, autoSpin, autoSpinSpeed]);
+  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick, onActiveItemChange, autoSpin, autoSpinSpeed, planeWidth, planeHeight]);
   return (
     <div
       className="circular-gallery"
