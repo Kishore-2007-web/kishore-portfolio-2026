@@ -1,5 +1,5 @@
 import React from 'react';
-import GlowCursor from './components/GlowCursor/GlowCursor';
+import CursorMotionBlur from './components/CursorMotionBlur/CursorMotionBlur';
 import { Navbar } from './components/navigation/Navbar';
 import { HeroSection } from './components/sections/HeroSection';
 import { CurvedLoopSection } from './components/sections/CurvedLoopSection';
@@ -16,24 +16,16 @@ import { Footer } from './components/sections/Footer';
 export function App() {
   return (
     <div style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative' }}>
-      <GlowCursor
-        color="#67E8F9"
-        secondaryColor="#A78BFA"
-        trailLength={40}
-        trailWidth={8}
-        trailTaper={0.8}
-        followSpeed={0.16}
-        glowIntensity={1.9}
-        glowSpread={1.2}
-        hotspot={0.65}
-        brightness={1.25}
-        opacity={1}
-        pulseSpeed={1.1}
-        noiseStrength={0.035}
-        idleFade
-        idleTimeout={700}
-        fadeDuration={900}
-        blendMode="screen"
+      <CursorMotionBlur
+        triggerVelocity={25}
+        stopVelocity={10}
+        tailOffsetX={6}
+        tailOffsetY={10}
+        tailLength={10}
+        outlineWidth={10}
+        coreWidth={6}
+        outlineColor="rgba(0, 0, 0, 0.86)"
+        coreColor="rgba(255, 255, 255, 0.90)"
       />
       <Navbar />
       <main>
