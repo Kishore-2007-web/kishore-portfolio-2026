@@ -156,6 +156,7 @@ class Title {
     this.createMesh();
   }
   createMesh() {
+    if (!this.text || !this.text.trim()) return;
     const { texture, width, height } = createTextTexture(this.gl, this.text, this.font, this.textColor);
     const geometry = new Plane(this.gl);
     const program = new Program(this.gl, {
@@ -209,7 +210,9 @@ class Media {
     textColor,
     borderRadius = 0,
     font,
-    rawItem
+    rawItem,
+    planeWidth = 480,
+    planeHeight = 316
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -227,6 +230,8 @@ class Media {
     this.borderRadius = borderRadius;
     this.font = font;
     this.rawItem = rawItem;
+    this.planeWidth = planeWidth;
+    this.planeHeight = planeHeight;
     this.createShader();
     this.createMesh();
     this.createTitle();
