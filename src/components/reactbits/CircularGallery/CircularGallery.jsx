@@ -679,8 +679,8 @@ export function CircularGallery({
   onActiveItemChange,
   autoSpin = true,
   autoSpinSpeed = 0.8,
-  planeWidth = 480,
-  planeHeight = 316
+  planeWidth = 520,
+  planeHeight = 416
 }) {
   const containerRef = useRef(null);
   useEffect(() => {
