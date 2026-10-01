@@ -267,15 +267,17 @@ export function KisaCompanion() {
             border-radius: 20px 20px 0 0 !important;
             margin: 0 !important;
           }
-          .kisa-companion-anchor {
-            bottom: 16px !important;
-            right: 16px !important;
+          .kisa-companion-anchor,
+          .kisa-launcher-pill {
+            bottom: 18px !important;
+            right: 18px !important;
+            left: auto !important;
           }
         }
       `}</style>
 
       {/* ========================================================
-          1. COMPANION CHARACTER (DESKTOP & MOBILE AMBIENT DOCK)
+          1. 3D KISA COMPANION CHARACTER BOT (RIGHT SIDE)
           ======================================================== */}
       {!isOpen && (
         <div
