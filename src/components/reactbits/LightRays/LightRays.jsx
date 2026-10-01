@@ -5,6 +5,18 @@ import './LightRays.css';
 const DEFAULT_COLOR = 'var(--text)';
 
 const hexToRgb = hex => {
+  if (typeof hex === 'string' && hex.startsWith('var(')) {
+    if (typeof window !== 'undefined') {
+      const varName = hex.slice(4, -1).trim();
+      const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      if (val) {
+        const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(val);
+        if (match) {
+          return [parseInt(match[1], 16) / 255, parseInt(match[2], 16) / 255, parseInt(match[3], 16) / 255];
+        }
+      }
+    }
+  }
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return m ? [parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255] : [1, 1, 1];
 };
@@ -55,7 +67,7 @@ export const LightRays = ({
   const animationIdRef = useRef(null);
   const meshRef = useRef(null);
   const cleanupFunctionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const observerRef = useRef(null);
 
   useEffect(() => {
@@ -64,9 +76,11 @@ export const LightRays = ({
     observerRef.current = new IntersectionObserver(
       entries => {
         const entry = entries[0];
-        setIsVisible(entry.isIntersecting);
+        if (entry) {
+          setIsVisible(entry.isIntersecting);
+        }
       },
-      { threshold: 0.1 }
+      { threshold: 0.0 }
     );
 
     observerRef.current.observe(containerRef.current);
@@ -205,6 +219,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
   fragColor.rgb *= raysColor;
 
+  float bottomFade = smoothstep(1.0, 0.70, coord.y / iResolution.y);
+  fragColor *= bottomFade;
+
   if (lightMode > 0.5) {
     vec3 mapped = vec3(1.0) - exp(-max(fragColor.rgb, vec3(0.0)) * 1.35);
     float energy = clamp(max(mapped.r, max(mapped.g, mapped.b)), 0.0, 1.0);
@@ -295,6 +312,14 @@ void main() {
         }
       };
 
+      let resizeObserver = null;
+      if (typeof window !== 'undefined' && window.ResizeObserver && containerRef.current) {
+        resizeObserver = new ResizeObserver(() => {
+          updatePlacement();
+        });
+        resizeObserver.observe(containerRef.current);
+      }
+
       window.addEventListener('resize', updatePlacement);
       updatePlacement();
       animationIdRef.current = requestAnimationFrame(loop);
@@ -303,6 +328,11 @@ void main() {
         if (animationIdRef.current) {
           cancelAnimationFrame(animationIdRef.current);
           animationIdRef.current = null;
+        }
+
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+          resizeObserver = null;
         }
 
         window.removeEventListener('resize', updatePlacement);

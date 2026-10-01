@@ -12,6 +12,7 @@ import { LabSection } from './components/sections/LabSection';
 import { GitHubSection } from './components/sections/GitHubSection';
 import { ContactSection } from './components/sections/ContactSection';
 import { Footer } from './components/sections/Footer';
+import { KisaCompanion } from './components/ai/KisaCompanion';
 
 export function App() {
   return (
@@ -41,6 +42,7 @@ export function App() {
         <ContactSection />
       </main>
       <Footer />
+      <KisaCompanion />
     </div>
   );
 }

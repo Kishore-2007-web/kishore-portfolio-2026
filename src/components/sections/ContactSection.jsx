@@ -26,7 +26,7 @@ export function ContactSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Background Volumetric LightRays Layer */}
+      {/* Background Volumetric LightRays Layer (Illuminating from above) */}
       <div
         className="contact-rays"
         style={{
@@ -43,7 +43,7 @@ export function ContactSection() {
         <WebGLErrorBoundary minHeight="100%">
           <LightRays
             raysOrigin="top-center"
-            raysColor="var(--text)"
+            raysColor="#ffffff"
             raysSpeed={1.5}
             lightSpread={0.9}
             rayLength={1.5}
