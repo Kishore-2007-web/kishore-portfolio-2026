@@ -1,3 +1,5 @@
+import { getWhatsAppUrl, WHATSAPP_CONFIG } from '../utils/whatsapp';
+
 export const siteConfig = {
   name: "Kishore",
   title: "Web Developer · UI/UX Designer · Software Developer · Game Developer · 3D Creator",
@@ -26,8 +28,9 @@ export const siteConfig = {
     email: "itsmekishore00@gmail.com",
     github: "https://github.com/Kishore-2007-web",
     linkedin: "https://www.linkedin.com/in/contact-kishore-v",
-    whatsapp: "8838635463",
-    whatsappLink: "https://wa.me/918838635463"
+    whatsapp: WHATSAPP_CONFIG.rawNumber,
+    whatsappMessage: WHATSAPP_CONFIG.defaultMessage,
+    whatsappLink: getWhatsAppUrl(),
   },
   githubProfile: {
     username: "Kishore-2007-web",
