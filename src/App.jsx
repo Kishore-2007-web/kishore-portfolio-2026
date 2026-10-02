@@ -1,6 +1,10 @@
+
+
+
 import React from 'react';
 import CursorMotionBlur from './components/CursorMotionBlur/CursorMotionBlur';
 import { Navbar } from './components/navigation/Navbar';
+import { HeroScrollCharacter } from './components/sections/HeroScrollCharacter';
 import { HeroSection } from './components/sections/HeroSection';
 import { CurvedLoopSection } from './components/sections/CurvedLoopSection';
 import { AboutSection } from './components/sections/AboutSection';
@@ -30,6 +34,7 @@ export function App() {
         coreColor="rgba(255, 255, 255, 0.90)"
       />
       <Navbar />
+      <HeroScrollCharacter />
       <main>
         <HeroSection />
         <CurvedLoopSection />

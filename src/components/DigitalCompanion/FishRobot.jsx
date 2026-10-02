@@ -40,51 +40,82 @@ export function FishRobot({
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // --- LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // --- THEME ADAPTIVE LIGHTING & MATERIALS ---
+    const isThemeWhite = () => document.documentElement.getAttribute('data-theme') === 'white';
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, isThemeWhite() ? 1.4 : 0.9);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 2.8 : 2.4);
     keyLight.position.set(3, 4, 3);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.6);
+    const rimLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 1.8 : 1.6);
     rimLight.position.set(-3, 0, -2);
     scene.add(rimLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const fillLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 0.8 : 0.5);
     fillLight.position.set(0, -3, 2);
     scene.add(fillLight);
 
-    // --- MATERIALS (CERAMIC WHITE + DARK MIRROR VISOR) ---
+    // --- MATERIALS (THEME ADAPTIVE) ---
     const chassisMat = new THREE.MeshStandardMaterial({
-      color: 0xededf2, // Ceramic White
-      roughness: 0.3,
-      metalness: 0.45,
+      color: isThemeWhite() ? 0xf5f7fb : 0xededf2, // Luminous Pearl White
+      roughness: isThemeWhite() ? 0.22 : 0.3,
+      metalness: isThemeWhite() ? 0.12 : 0.45,
     });
 
     const visorMat = new THREE.MeshStandardMaterial({
-      color: 0x111114, // Dark Obsidian Glass
-      roughness: 0.08,
-      metalness: 0.95,
+      color: isThemeWhite() ? 0xd0d5df : 0x111114, // Frosted Platinum in light / Obsidian Glass in dark
+      roughness: isThemeWhite() ? 0.28 : 0.08,
+      metalness: isThemeWhite() ? 0.35 : 0.95,
     });
 
     const chromeMat = new THREE.MeshStandardMaterial({
-      color: 0x9898a0, // Brushed Titanium / Chrome
-      roughness: 0.22,
-      metalness: 0.9,
+      color: isThemeWhite() ? 0xc8cdd8 : 0x9898a0,
+      roughness: isThemeWhite() ? 0.2 : 0.22,
+      metalness: isThemeWhite() ? 0.65 : 0.9,
     });
 
     const eyeMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+      color: isThemeWhite() ? 0x0a0c10 : 0xffffff, // Deep black digital eyes in light / Luminous white in dark
       transparent: true,
       opacity: 0.98,
     });
 
     const thrusterMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+      color: isThemeWhite() ? 0x00b4d8 : 0xffffff,
       transparent: true,
       opacity: 0.85,
+    });
+
+    const handleThemeChange = () => {
+      const white = isThemeWhite();
+      ambientLight.intensity = white ? 1.4 : 0.9;
+      keyLight.intensity = white ? 2.8 : 2.4;
+      rimLight.intensity = white ? 1.8 : 1.6;
+      fillLight.intensity = white ? 0.8 : 0.5;
+
+      chassisMat.color.setHex(white ? 0xf5f7fb : 0xededf2);
+      chassisMat.roughness = white ? 0.22 : 0.3;
+      chassisMat.metalness = white ? 0.12 : 0.45;
+
+      visorMat.color.setHex(white ? 0xd0d5df : 0x111114);
+      visorMat.roughness = white ? 0.28 : 0.08;
+      visorMat.metalness = white ? 0.35 : 0.95;
+
+      chromeMat.color.setHex(white ? 0xc8cdd8 : 0x9898a0);
+      chromeMat.roughness = white ? 0.2 : 0.22;
+      chromeMat.metalness = white ? 0.65 : 0.9;
+
+      eyeMat.color.setHex(white ? 0x0a0c10 : 0xffffff);
+      thrusterMat.color.setHex(white ? 0x00b4d8 : 0xffffff);
+    };
+
+    const themeObserver = new MutationObserver(handleThemeChange);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
     });
 
     // --- ROOT RIG GROUP ---
@@ -387,6 +418,7 @@ export function FishRobot({
 
     // --- TEARDOWN ---
     return () => {
+      themeObserver.disconnect();
       cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseenter', handleMouseEnter);

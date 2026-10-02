@@ -40,6 +40,10 @@
   /* Layout Boundaries */
   --max-width: 1280px;
   --header-height: 72px;
+
+  /* Navbar scrolled glass background */
+  --navbar-bg-scrolled: rgba(10, 10, 15, 0.80);
+  --card-shadow: 0 20px 80px rgba(var(--shadow-rgb), 0.45);
 }
 
 /* -------------------------------------
@@ -66,6 +70,10 @@
   --text-secondary: #4b4b4b;
   --text-muted: #737373;
   --text-dim: #a3a3a3;
+
+  /* Navbar scrolled glass background */
+  --navbar-bg-scrolled: rgba(255, 255, 255, 0.85);
+  --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
 
   /* Accent colors - kept subtle for light mode */
   --accent-cyan: rgba(0, 150, 180, 0.7);
@@ -121,7 +129,7 @@ body {
   border: 1px solid var(--border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 20px 80px rgba(var(--shadow-rgb), 0.45);
+  box-shadow: var(--card-shadow);
   border-radius: 16px;
   transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }

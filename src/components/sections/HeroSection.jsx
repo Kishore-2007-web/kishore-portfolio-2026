@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { siteConfig } from '../../data/site';
 import { GlassButton } from '../ui/GlassButton';
 import AeroShards from '../reactbits/AeroShards/AeroShards';
@@ -7,6 +7,8 @@ import { ResumeModal } from '../ui/ResumeModal';
 
 export function HeroSection({ onOpenResume }) {
   const [resumeOpen, setResumeOpen] = useState(false);
+  const heroRef = useRef(null);
+  const letterTRef = useRef(null);
 
   const handleResumeClick = (e) => {
     if (e) e.preventDefault();
@@ -21,6 +23,7 @@ export function HeroSection({ onOpenResume }) {
     <>
       <section
         id="hero"
+        ref={heroRef}
         style={{
           position: 'relative',
           minHeight: '100vh',
@@ -110,7 +113,7 @@ export function HeroSection({ onOpenResume }) {
                 textTransform: 'uppercase',
               }}
             >
-              I BUILD DIGITAL <br />
+              I BUILD DIGI<span ref={letterTRef} id="hero-letter-t">T</span>AL <br />
               EXPERIENCES <br />
               THAT MATTER.
             </h1>

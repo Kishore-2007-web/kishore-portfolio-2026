@@ -56,7 +56,7 @@ export function Navbar() {
           pointerEvents: 'auto',
           borderRadius: '9999px',
           borderColor: scrolled ? 'rgba(var(--glass-rgb), 0.18)' : 'rgba(var(--glass-rgb), 0.1)',
-          background: scrolled ? 'rgba(var(--shadow-rgb), 0.75)' : 'rgba(var(--glass-rgb), 0.035)',
+          background: scrolled ? 'var(--navbar-bg-scrolled, rgba(var(--shadow-rgb), 0.75))' : 'rgba(var(--glass-rgb), 0.035)',
         }}
       >
         {/* Brand Logo */}
