@@ -2,19 +2,23 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 /**
- * KisaCharacter - Procedural 3D Interactive Companion for Kishore's Portfolio
+ * KisaCharacter - Full Procedural 3D Interactive Companion for Kishore's Portfolio
  * 
- * Aesthetic: Cinematic Digital Laboratory
- * Features:
- * - Geometric cybernetic chassis (floating head, curved visor, magnetic neck gap, gyro ring, core reactor)
- * - Expressive animated digital visor eyes (blinking, cursor tracking, thinking waveform pulse)
- * - Autonomous idle floating (sinusoidal levitation) & head glance
- * - Responsive cursor look-at tracking with smooth lerp damping
- * - Instant automatic adaptation to Black / White portfolio themes
+ * Aesthetic Configuration:
+ * - Ceramic white / light platinum metallic robot chassis
+ * - Sleek frosted visor faceplate with subtle CRT scanlines
+ * - Deep obsidian black digital circular eyes with fine scanlines
+ * - Independent levitating floating side arms / pods
+ * - Sleek floating egg/teardrop light body with obsidian black chest core
+ * - Dual ear pivots with vertical titanium antenna pins
+ * - Full 3D WebGL cursor tracking, natural head cocking, and eye pupil tracking
+ * - Autonomous idle breathing, levitation, and natural eye blinks
+ * - Synchronized state animations (idle, noticed, talking, click spin)
+ * - Automatic lighting adaptation for Black / White themes
  */
 export function KisaCharacter({
   state = 'idle', // 'idle' | 'noticed' | 'talking' | 'active'
-  size = 130,     // Canvas diameter in px
+  size = 130,     // Canvas width/height in px
   interactive = true,
   onClick,
   activeSection = 'hero',
@@ -27,177 +31,286 @@ export function KisaCharacter({
     const container = mountRef.current;
     if (!container) return;
 
-    // --- SCENE & CAMERA SETUP ---
+    // --- 1. THREE.JS SCENE, CAMERA & RENDERER ---
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-    camera.position.set(0, 0.1, 3.8);
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0.05, 3.8);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
-      powerPreference: 'high-performance'
+      powerPreference: 'high-performance',
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(size, size);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // --- LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    // --- 2. THEME-ADAPTIVE LIGHTING SYSTEM ---
+    const isThemeWhite = () => document.documentElement.getAttribute('data-theme') === 'white';
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, isThemeWhite() ? 0.75 : 0.90);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    keyLight.position.set(2, 4, 3);
+    const keyLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 2.4 : 2.2);
+    keyLight.position.set(2.5, 3.5, 3.5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    rimLight.position.set(-3, -1, -2);
-    scene.add(rimLight);
+    const leftRimLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 1.6 : 1.4);
+    leftRimLight.position.set(-3.5, 1.2, -2.2);
+    scene.add(leftRimLight);
 
-    const bottomFill = new THREE.DirectionalLight(0xffffff, 0.4);
-    bottomFill.position.set(0, -3, 2);
-    scene.add(bottomFill);
+    const rightRimLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 1.4 : 1.2);
+    rightRimLight.position.set(3.5, 1.2, -2.0);
+    scene.add(rightRimLight);
 
-    // --- CHARACTER PALETTE (CERAMIC WHITE CHASSIS + DARK MIRROR VISOR) ---
-    const getThemeColors = () => {
-      return {
-        isWhite: true,
-        chassis: 0xededf2,      // Ceramic white chassis
-        chassisRough: 0.32,
-        chassisMetal: 0.45,
-        visor: 0x111114,        // Dark mirror visor faceplate
-        visorRough: 0.08,
-        visorMetal: 0.95,
-        metalAccents: 0x9898a0, // Brushed chrome / titanium accents
-        eyes: 0xffffff,         // Luminescent white sensor slits
-        corePulse: 0xffffff     // Pure white core reactor light
-      };
-    };
+    const topRimLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 1.8 : 1.6);
+    topRimLight.position.set(0, 4.0, -2.2);
+    scene.add(topRimLight);
 
-    let theme = getThemeColors();
+    const bottomFillLight = new THREE.DirectionalLight(0xffffff, isThemeWhite() ? 0.6 : 0.5);
+    bottomFillLight.position.set(0, -3.0, 2.5);
+    scene.add(bottomFillLight);
 
-    // --- MATERIALS ---
+    // --- 3. DYNAMIC PROCEDURAL TEXTURES ---
+    // (a) Frosted Light CRT Visor Screen Texture
+    const screenCanvas = document.createElement('canvas');
+    screenCanvas.width = 256;
+    screenCanvas.height = 256;
+    const sCtx = screenCanvas.getContext('2d');
+    const sGrad = sCtx.createRadialGradient(128, 128, 10, 128, 128, 140);
+    sGrad.addColorStop(0, '#f2f5fa');
+    sGrad.addColorStop(0.7, '#e4e8f0');
+    sGrad.addColorStop(1, '#d5dae4');
+    sCtx.fillStyle = sGrad;
+    sCtx.fillRect(0, 0, 256, 256);
+    // Subtle scanlines
+    sCtx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+    for (let y = 0; y < 256; y += 4) {
+      sCtx.fillRect(0, y, 256, 1.5);
+    }
+    const screenTex = new THREE.CanvasTexture(screenCanvas);
+
+    // (b) Deep Obsidian Black Digital Eyes with fine scanlines
+    const eyeCanvas = document.createElement('canvas');
+    eyeCanvas.width = 128;
+    eyeCanvas.height = 128;
+    const eCtx = eyeCanvas.getContext('2d');
+    const eGrad = eCtx.createRadialGradient(64, 64, 0, 64, 64, 54);
+    eGrad.addColorStop(0, '#040608');
+    eGrad.addColorStop(0.65, '#0c0f14');
+    eGrad.addColorStop(0.88, '#181d26');
+    eGrad.addColorStop(0.96, '#28303e');
+    eGrad.addColorStop(1, 'rgba(40, 48, 62, 0)');
+    eCtx.fillStyle = eGrad;
+    eCtx.beginPath();
+    eCtx.arc(64, 64, 54, 0, Math.PI * 2);
+    eCtx.fill();
+    // Fine digital scanlines across the black eyes
+    eCtx.fillStyle = 'rgba(45, 55, 70, 0.45)';
+    for (let y = 14; y < 114; y += 7) {
+      eCtx.fillRect(10, y, 108, 2.5);
+    }
+    const eyeTex = new THREE.CanvasTexture(eyeCanvas);
+
+    // (c) Obsidian Black Chest Reactor Core Lens
+    const coreCanvas = document.createElement('canvas');
+    coreCanvas.width = 128;
+    coreCanvas.height = 128;
+    const cCtx = coreCanvas.getContext('2d');
+    const cGrad = cCtx.createRadialGradient(64, 64, 0, 64, 64, 52);
+    cGrad.addColorStop(0, '#06080a');
+    cGrad.addColorStop(0.6, '#10141a');
+    cGrad.addColorStop(0.85, '#222834');
+    cGrad.addColorStop(1, 'rgba(34, 40, 52, 0)');
+    cCtx.fillStyle = cGrad;
+    cCtx.beginPath();
+    cCtx.arc(64, 64, 52, 0, Math.PI * 2);
+    cCtx.fill();
+    const coreTex = new THREE.CanvasTexture(coreCanvas);
+
+    // --- 4. SHADERS & MATERIALS (LIGHT CERAMIC CHASSIS + BLACK EYES) ---
+    // Ceramic white / platinum light chassis
     const chassisMat = new THREE.MeshStandardMaterial({
-      color: theme.chassis,
-      roughness: theme.chassisRough,
-      metalness: theme.chassisMetal,
+      color: 0xeff1f5,
+      roughness: 0.28,
+      metalness: 0.32,
     });
 
-    const visorMat = new THREE.MeshStandardMaterial({
-      color: theme.visor,
-      roughness: theme.visorRough,
-      metalness: theme.visorMetal,
+    // Brushed titanium / bright steel for ear pivots and antenna rods
+    const earMat = new THREE.MeshStandardMaterial({
+      color: 0xd6dae2,
+      roughness: 0.18,
+      metalness: 0.88,
     });
 
-    const accentMat = new THREE.MeshStandardMaterial({
-      color: theme.metalAccents,
-      roughness: 0.2,
-      metalness: 0.9,
+    // Satin metallic screen bezel
+    const bezelMat = new THREE.MeshStandardMaterial({
+      color: 0xc8cdd6,
+      roughness: 0.34,
+      metalness: 0.65,
     });
 
+    // Light frosted screen material
+    const screenMat = new THREE.MeshStandardMaterial({
+      map: screenTex,
+      roughness: 0.24,
+      metalness: 0.18,
+    });
+
+    // Deep obsidian black digital eyes
     const eyeMat = new THREE.MeshBasicMaterial({
-      color: theme.eyes,
+      map: eyeTex,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.98,
+      depthTest: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
     });
 
+    // Deep black circular chest core
     const coreMat = new THREE.MeshBasicMaterial({
-      color: theme.corePulse,
+      map: coreTex,
+      transparent: true,
+      opacity: 0.98,
+      depthTest: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
     });
 
-    // --- ROOT RIG GROUP ---
+    // --- 5. HIERARCHICAL 3D CHARACTER RIG ---
     const kisaRig = new THREE.Group();
     scene.add(kisaRig);
 
-    // --- HEAD GROUP ---
+    // ==========================================
+    // (A) HEAD GROUP (Levitating above body)
+    // ==========================================
     const headGroup = new THREE.Group();
-    headGroup.position.y = 0.32;
+    headGroup.position.set(0, 0.38, 0);
     kisaRig.add(headGroup);
 
-    // Head Chassis (Aerodynamic smooth squashed capsule)
-    const headGeo = new THREE.SphereGeometry(0.68, 36, 28);
-    headGeo.scale(1.15, 0.88, 1.0);
+    // 1. Head Chassis (Rounded squashed aerodynamic capsule, recessed in front)
+    const headGeo = new THREE.SphereGeometry(0.70, 48, 36);
+    headGeo.scale(1.15, 0.94, 0.80);
     const headMesh = new THREE.Mesh(headGeo, chassisMat);
     headGroup.add(headMesh);
 
-    // Visor Faceplate (Recessed curved digital shield)
-    const visorGeo = new THREE.SphereGeometry(0.62, 32, 24, 0, Math.PI, 0, Math.PI);
-    visorGeo.scale(1.08, 0.78, 0.75);
-    const visorMesh = new THREE.Mesh(visorGeo, visorMat);
-    visorMesh.rotation.y = -Math.PI / 2;
-    visorMesh.position.set(0, 0.02, 0.22);
-    headGroup.add(visorMesh);
+    // 2. Inset Visor Screen Face (Curved dome projecting in front of head)
+    const screenGeo = new THREE.SphereGeometry(0.66, 40, 32, Math.PI * 0.15, Math.PI * 0.70, Math.PI * 0.15, Math.PI * 0.70);
+    screenGeo.scale(1.15, 0.88, 0.55);
+    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+    screenMesh.position.set(0, 0.02, 0.25);
+    headGroup.add(screenMesh);
 
-    // Eye Optics: Left & Right Expressive Sensor Slits
-    const eyeGeo = new THREE.PlaneGeometry(0.18, 0.055);
+    // 3. Monitor Screen Outer Bezel
+    const bezelGeo = new THREE.TorusGeometry(0.52, 0.04, 16, 48);
+    bezelGeo.scale(1.22, 0.90, 0.50);
+    const bezelMesh = new THREE.Mesh(bezelGeo, bezelMat);
+    bezelMesh.position.set(0, 0.02, 0.56);
+    headGroup.add(bezelMesh);
+
+    // 4. Digital Black Eyes (Left & Right - sitting boldly on screen dome)
+    const eyeGeo = new THREE.PlaneGeometry(0.30, 0.30);
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-    leftEye.position.set(-0.22, 0.04, 0.72);
+    leftEye.position.set(-0.21, 0.05, 0.615);
     headGroup.add(leftEye);
 
     const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-    rightEye.position.set(0.22, 0.04, 0.72);
+    rightEye.position.set(0.21, 0.05, 0.615);
     headGroup.add(rightEye);
 
-    // Audio/Telemetry Ear Sensor Nodes
-    const earGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.18, 20);
-    earGeo.rotateZ(Math.PI / 2);
-    const leftEar = new THREE.Mesh(earGeo, accentMat);
-    leftEar.position.set(-0.80, 0.02, 0);
-    headGroup.add(leftEar);
+    // 5. Left Ear Pivot & Antenna Rod
+    const earPivotGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.14, 24);
+    earPivotGeo.rotateZ(Math.PI / 2);
 
-    const rightEar = new THREE.Mesh(earGeo, accentMat);
-    rightEar.position.set(0.80, 0.02, 0);
-    headGroup.add(rightEar);
+    const leftEarMesh = new THREE.Mesh(earPivotGeo, earMat);
+    leftEarMesh.position.set(-0.82, 0.04, 0);
+    headGroup.add(leftEarMesh);
 
-    // Antenna / Top Sensor Crest
-    const crestGeo = new THREE.BoxGeometry(0.08, 0.14, 0.45);
-    const crestMesh = new THREE.Mesh(crestGeo, accentMat);
-    crestMesh.position.set(0, 0.60, -0.05);
-    headGroup.add(crestMesh);
+    const antennaGeo = new THREE.CylinderGeometry(0.016, 0.016, 0.62, 16);
+    antennaGeo.translate(0, 0.31, 0); // Origin at base of antenna
 
-    // Magnetic Neck Levitation Emitter
-    const neckCoreGeo = new THREE.SphereGeometry(0.09, 16, 16);
-    const neckCore = new THREE.Mesh(neckCoreGeo, coreMat);
-    neckCore.position.set(0, -0.42, 0);
-    headGroup.add(neckCore);
+    const leftAntenna = new THREE.Mesh(antennaGeo, earMat);
+    leftAntenna.position.set(-0.82, 0.04, 0);
+    headGroup.add(leftAntenna);
 
-    // --- BODY GROUP ---
+    // 6. Right Ear Pivot & Antenna Rod
+    const rightEarMesh = new THREE.Mesh(earPivotGeo, earMat);
+    rightEarMesh.position.set(0.82, 0.04, 0);
+    headGroup.add(rightEarMesh);
+
+    const rightAntenna = new THREE.Mesh(antennaGeo, earMat);
+    rightAntenna.position.set(0.82, 0.04, 0);
+    headGroup.add(rightAntenna);
+
+    // ==========================================
+    // (B) BODY GROUP (Floating below head)
+    // ==========================================
     const bodyGroup = new THREE.Group();
-    bodyGroup.position.y = -0.45;
+    bodyGroup.position.set(0, -0.46, 0);
     kisaRig.add(bodyGroup);
 
-    // Torso Chassis (Tapered geometric core)
-    const torsoGeo = new THREE.CylinderGeometry(0.42, 0.18, 0.58, 24);
-    const torsoMesh = new THREE.Mesh(torsoGeo, chassisMat);
-    bodyGroup.add(torsoMesh);
+    // Tapered egg/droplet body shape
+    const bodyGeo = new THREE.SphereGeometry(0.50, 40, 32);
+    const pos = bodyGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      let vx = pos.getX(i);
+      let vy = pos.getY(i);
+      let vz = pos.getZ(i);
 
-    // Chest Reactor Aperture
-    const chestCoreGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.06, 16);
-    chestCoreGeo.rotateX(Math.PI / 2);
-    const chestCore = new THREE.Mesh(chestCoreGeo, coreMat);
-    chestCore.position.set(0, 0.08, 0.32);
-    bodyGroup.add(chestCore);
+      // Downward taper factor
+      const taper = 1.0 - Math.max(0, -vy * 0.42);
+      pos.setX(i, vx * taper * 0.96);
+      pos.setY(i, vy * 1.18);
+      pos.setZ(i, vz * taper * 0.88);
+    }
+    bodyGeo.computeVertexNormals();
+    const bodyMesh = new THREE.Mesh(bodyGeo, chassisMat);
+    bodyGroup.add(bodyMesh);
 
-    // Levitation Gyroscope Halo Ring
-    const ringGeo = new THREE.TorusGeometry(0.72, 0.025, 16, 48);
-    ringGeo.rotateX(Math.PI / 2.3);
-    const gyroRing = new THREE.Mesh(ringGeo, accentMat);
-    bodyGroup.add(gyroRing);
+    // Chest Circular Core Light (with dark outer bezel)
+    const chestCoreBezelGeo = new THREE.TorusGeometry(0.082, 0.016, 16, 32);
+    const chestCoreBezel = new THREE.Mesh(chestCoreBezelGeo, bezelMat);
+    chestCoreBezel.position.set(0, 0.07, 0.44);
+    bodyGroup.add(chestCoreBezel);
 
-    // Micro Thruster Cone
-    const thrusterGeo = new THREE.ConeGeometry(0.14, 0.22, 16);
-    thrusterGeo.rotateX(Math.PI);
-    const thrusterMesh = new THREE.Mesh(thrusterGeo, accentMat);
-    thrusterMesh.position.set(0, -0.38, 0);
-    bodyGroup.add(thrusterMesh);
+    const chestCoreGeo = new THREE.PlaneGeometry(0.16, 0.16);
+    const chestCoreMesh = new THREE.Mesh(chestCoreGeo, coreMat);
+    chestCoreMesh.position.set(0, 0.07, 0.455);
+    bodyGroup.add(chestCoreMesh);
 
-    // --- INTERACTIVE TRACKING STATE ---
+    // ==========================================
+    // (C) LEVITATING FLOATING SIDE ARMS
+    // ==========================================
+    const armGeo = new THREE.SphereGeometry(0.28, 32, 24);
+    armGeo.scale(0.52, 1.35, 0.64);
+    armGeo.computeVertexNormals();
+
+    // Left Floating Arm
+    const leftArmGroup = new THREE.Group();
+    leftArmGroup.position.set(-0.76, -0.40, 0);
+    const leftArmMesh = new THREE.Mesh(armGeo, chassisMat);
+    leftArmMesh.rotation.z = -0.24; // Subtle inward angle
+    leftArmMesh.rotation.x = 0.12;
+    leftArmGroup.add(leftArmMesh);
+    kisaRig.add(leftArmGroup);
+
+    // Right Floating Arm
+    const rightArmGroup = new THREE.Group();
+    rightArmGroup.position.set(0.76, -0.40, 0);
+    const rightArmMesh = new THREE.Mesh(armGeo, chassisMat);
+    rightArmMesh.rotation.z = 0.24; // Subtle inward angle
+    rightArmMesh.rotation.x = 0.12;
+    rightArmGroup.add(rightArmMesh);
+    kisaRig.add(rightArmGroup);
+
+    // --- 6. INTERACTIVE TRACKING & PHYSICS STATE ---
     let mouse = { x: 0, y: 0 };
-    let targetRotation = { x: 0, y: 0, z: 0 };
+    let targetHeadRot = { x: 0, y: 0, z: 0 };
     let isHovered = false;
     let blinkTimer = 0;
-    let nextBlink = 3.0;
+    let nextBlink = 3.2;
     let isBlinking = false;
     let blinkProgress = 0;
     let clickSpin = 0;
@@ -207,13 +320,12 @@ export function KisaCharacter({
       const rect = container.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      
+
       const dx = (e.clientX - cx) / (window.innerWidth * 0.5);
       const dy = (e.clientY - cy) / (window.innerHeight * 0.5);
-      
-      // Clamp rotation angles for natural movement
-      mouse.x = THREE.MathUtils.clamp(dx * 1.2, -0.65, 0.65);
-      mouse.y = THREE.MathUtils.clamp(dy * 1.0, -0.45, 0.45);
+
+      mouse.x = THREE.MathUtils.clamp(dx * 1.25, -0.75, 0.75);
+      mouse.y = THREE.MathUtils.clamp(dy * 1.1, -0.55, 0.55);
     };
 
     const handleMouseEnter = () => {
@@ -226,9 +338,9 @@ export function KisaCharacter({
       mouse.y = 0;
     };
 
-    const handleClickTrigger = () => {
+    const handleClickTrigger = (e) => {
       clickSpin = Math.PI * 2;
-      if (onClick) onClick();
+      if (onClick) onClick(e);
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -236,100 +348,118 @@ export function KisaCharacter({
     container.addEventListener('mouseleave', handleMouseLeave);
     container.addEventListener('click', handleClickTrigger);
 
-    // Theme Change Observer
-    const observer = new MutationObserver(() => {
-      const t = getThemeColors();
-      chassisMat.color.setHex(t.chassis);
-      chassisMat.roughness = t.chassisRough;
-      chassisMat.metalness = t.chassisMetal;
-      visorMat.color.setHex(t.visor);
-      accentMat.color.setHex(t.metalAccents);
-      eyeMat.color.setHex(t.eyes);
-      coreMat.color.setHex(t.corePulse);
+    // Dynamic Theme Observer
+    const themeObserver = new MutationObserver(() => {
+      const white = isThemeWhite();
+      ambientLight.intensity = white ? 0.75 : 0.90;
+      keyLight.intensity = white ? 2.4 : 2.2;
+      leftRimLight.intensity = white ? 1.6 : 1.4;
+      rightRimLight.intensity = white ? 1.4 : 1.2;
+      topRimLight.intensity = white ? 1.8 : 1.6;
+      bottomFillLight.intensity = white ? 0.6 : 0.5;
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
 
-    // --- ANIMATION LOOP ---
-    let clock = new THREE.Clock();
+    // --- 7. ANIMATION RENDER LOOP ---
+    const clock = new THREE.Clock();
     let animId;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const currentSt = stateRef.current;
 
-      // 1. Idle Sinusoidal Floating & Breathing
-      const floatOffset = Math.sin(elapsed * 2.2) * 0.08;
-      const breathScale = 1 + Math.sin(elapsed * 1.6) * 0.015;
-      kisaRig.position.y = floatOffset;
-      kisaRig.scale.set(breathScale, breathScale, breathScale);
+      // (a) Sinusoidal Organic Floating Levitation
+      const baseFloat = Math.sin(elapsed * 2.2) * 0.055;
+      const breathingScale = 1.0 + Math.sin(elapsed * 1.8) * 0.012;
+      kisaRig.position.y = baseFloat;
+      kisaRig.scale.set(breathingScale, breathingScale, breathingScale);
 
-      // Gyroscope Ring Gentle Rotation
-      gyroRing.rotation.z = elapsed * 0.8;
-      gyroRing.rotation.y = Math.sin(elapsed * 1.1) * 0.25;
+      // (b) Zero-G Independent Harmonic Arm Levitation
+      const leftArmFloat = Math.sin(elapsed * 2.6 + 0.6) * 0.035;
+      const rightArmFloat = Math.sin(elapsed * 2.6 - 0.6) * 0.035;
+      leftArmGroup.position.y = -0.40 + leftArmFloat;
+      rightArmGroup.position.y = -0.40 + rightArmFloat;
 
-      // 2. Cursor Tracking & Head Aiming
-      const activeState = stateRef.current;
-      if (activeState === 'noticed' || isHovered) {
-        targetRotation.y = mouse.x * 0.9;
-        targetRotation.x = mouse.y * 0.7;
-        targetRotation.z = -mouse.x * 0.18; // Natural head tilt
-      } else if (activeState === 'talking') {
-        // Expressive talking motion: slight nodding and frequency bob
-        targetRotation.y = Math.sin(elapsed * 4.5) * 0.15;
-        targetRotation.x = Math.cos(elapsed * 5.0) * 0.10;
-        targetRotation.z = 0;
+      leftArmGroup.rotation.z = Math.sin(elapsed * 1.8) * 0.04;
+      rightArmGroup.rotation.z = -Math.sin(elapsed * 1.8) * 0.04;
+
+      // (c) 3D Cursor Look-At & Natural Head Cocking
+      if (currentSt === 'noticed' || isHovered) {
+        targetHeadRot.y = mouse.x * 0.85;
+        targetHeadRot.x = mouse.y * 0.65;
+        targetHeadRot.z = -mouse.x * 0.16; // Inquisitive tilt
+      } else if (currentSt === 'talking') {
+        // Expressive rhythm nodding & conversational bob
+        targetHeadRot.y = Math.sin(elapsed * 4.8) * 0.14;
+        targetHeadRot.x = Math.cos(elapsed * 5.2) * 0.09;
+        targetHeadRot.z = 0;
       } else {
-        // Idle gentle observation scan
-        const idleScan = Math.sin(elapsed * 0.5) * 0.22;
-        targetRotation.y = idleScan + mouse.x * 0.4;
-        targetRotation.x = mouse.y * 0.25;
-        targetRotation.z = 0;
+        // Gentle autonomous scanning
+        const scan = Math.sin(elapsed * 0.45) * 0.08;
+        targetHeadRot.y = scan + mouse.x * 0.35;
+        targetHeadRot.x = mouse.y * 0.22;
+        targetHeadRot.z = 0;
       }
 
-      // Handle Click Spin Acknowledgment
+      // Handle Click Spin Reaction
       if (clickSpin > 0) {
-        clickSpin = Math.max(0, clickSpin - delta * 12);
-        kisaRig.rotation.y += delta * 12;
+        const step = delta * 14;
+        clickSpin = Math.max(0, clickSpin - step);
+        kisaRig.rotation.y += step;
       }
 
-      // Smooth Lerping
-      headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, targetRotation.y, 0.08);
-      headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, targetRotation.x, 0.08);
-      headGroup.rotation.z = THREE.MathUtils.lerp(headGroup.rotation.z, targetRotation.z, 0.08);
+      // Smooth damping interpolation (Lerp)
+      headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, targetHeadRot.y, 0.09);
+      headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, targetHeadRot.x, 0.09);
+      headGroup.rotation.z = THREE.MathUtils.lerp(headGroup.rotation.z, targetHeadRot.z, 0.09);
 
-      bodyGroup.rotation.y = THREE.MathUtils.lerp(bodyGroup.rotation.y, targetRotation.y * 0.45, 0.06);
+      // Body and arms subtly follow head rotation with lagging parallax
+      bodyGroup.rotation.y = THREE.MathUtils.lerp(bodyGroup.rotation.y, targetHeadRot.y * 0.38, 0.07);
+      bodyGroup.rotation.x = THREE.MathUtils.lerp(bodyGroup.rotation.x, targetHeadRot.x * 0.25, 0.07);
 
-      // 3. Eye Blinking & Waveform Animation
+      // (d) Digital Eyes Micro-Tracking on Screen Face
+      const eyeAimX = mouse.x * 0.035;
+      const eyeAimY = -mouse.y * 0.025;
+      leftEye.position.x = -0.21 + eyeAimX;
+      leftEye.position.y = 0.05 + eyeAimY;
+      rightEye.position.x = 0.21 + eyeAimX;
+      rightEye.position.y = 0.05 + eyeAimY;
+
+      // (e) Natural Blinking
       blinkTimer += delta;
       if (!isBlinking && blinkTimer > nextBlink) {
         isBlinking = true;
         blinkTimer = 0;
         blinkProgress = 0;
-        nextBlink = 3.2 + Math.random() * 3.5;
+        nextBlink = 3.0 + Math.random() * 3.5;
       }
 
       if (isBlinking) {
-        blinkProgress += delta * 14;
-        if (blinkProgress <= 1) {
-          const eyeScaleY = Math.max(0.08, 1 - Math.sin(blinkProgress * Math.PI));
+        blinkProgress += delta * 15;
+        if (blinkProgress <= 1.0) {
+          const eyeScaleY = Math.max(0.06, 1.0 - Math.sin(blinkProgress * Math.PI));
           leftEye.scale.y = eyeScaleY;
           rightEye.scale.y = eyeScaleY;
         } else {
           isBlinking = false;
-          leftEye.scale.y = 1;
-          rightEye.scale.y = 1;
+          leftEye.scale.y = 1.0;
+          rightEye.scale.y = 1.0;
         }
       }
 
-      // 4. Talking & Processing Waveform Pulse
-      if (activeState === 'talking') {
-        const pulse = 0.7 + Math.sin(elapsed * 16) * 0.35;
+      // (f) Talking & Thinking Digital Pulse
+      if (currentSt === 'talking') {
+        const pulse = 0.85 + Math.sin(elapsed * 18) * 0.15;
         eyeMat.opacity = pulse;
-        neckCore.scale.setScalar(1 + Math.sin(elapsed * 20) * 0.3);
+        chestCoreMesh.scale.setScalar(1.0 + Math.sin(elapsed * 22) * 0.2);
       } else {
-        eyeMat.opacity = isHovered ? 1.0 : 0.92;
-        neckCore.scale.setScalar(1 + Math.sin(elapsed * 3) * 0.1);
+        eyeMat.opacity = 0.98;
+        chestCoreMesh.scale.setScalar(1.0 + Math.sin(elapsed * 2.5) * 0.05);
       }
 
       renderer.render(scene, camera);
@@ -337,18 +467,19 @@ export function KisaCharacter({
 
     animate();
 
-    // --- TEARDOWN ---
+    // --- 8. CLEANUP & TEARDOWN ---
     return () => {
       cancelAnimationFrame(animId);
-      observer.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseenter', handleMouseEnter);
       container.removeEventListener('mouseleave', handleMouseLeave);
       container.removeEventListener('click', handleClickTrigger);
 
-      // Dispose Geometries and Materials
-      [headGeo, visorGeo, eyeGeo, earGeo, crestGeo, neckCoreGeo, torsoGeo, chestCoreGeo, ringGeo, thrusterGeo].forEach(g => g.dispose());
-      [chassisMat, visorMat, accentMat, eyeMat, coreMat].forEach(m => m.dispose());
+      // Dispose Geometries & Textures
+      [headGeo, screenGeo, bezelGeo, eyeGeo, earPivotGeo, antennaGeo, bodyGeo, chestCoreBezelGeo, chestCoreGeo, armGeo].forEach((g) => g.dispose());
+      [screenTex, eyeTex, coreTex].forEach((t) => t.dispose());
+      [chassisMat, earMat, bezelMat, screenMat, eyeMat, coreMat].forEach((m) => m.dispose());
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -361,11 +492,11 @@ export function KisaCharacter({
       ref={mountRef}
       role="button"
       tabIndex={0}
-      aria-label="KISA - Interactive AI Portfolio Companion"
+      aria-label="KISA - Interactive 3D AI Portfolio Companion"
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          if (onClick) onClick();
+          if (onClick) onClick(e);
         }
       }}
       style={{
