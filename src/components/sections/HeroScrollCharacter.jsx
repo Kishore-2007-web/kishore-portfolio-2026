@@ -26,7 +26,7 @@ export const CHARACTER_START_CONFIG = {
   // Vertical offset adjustment from the top edge of letter "T" (px)
   // 0 = resting directly on top of the crossbar
   // Negative (-) moves higher up, Positive (+) moves lower down
-  offsetY: 18.5,
+  offsetY: 0,
 
   // Bounce peak height on top of "T" (px)
   bounceHeightDesktop: 15,
@@ -61,6 +61,8 @@ export function HeroScrollCharacter() {
     isFlying: false,
     squashX: 1,
     squashY: 1,
+    rollTime: 0,
+    rollAngle: 0,
   });
 
   // 1. Theme Detection (Auto-detects data-theme, class, and system dark/light mode)
@@ -182,11 +184,16 @@ export function HeroScrollCharacter() {
       const scaleX = svgRect.width / 1440;
       const scaleY = svgRect.height / 495;
       const totalLen = typeof pathEl.getTotalLength === 'function' ? pathEl.getTotalLength() : 1677;
-      const pt = typeof pathEl.getPointAtLength === 'function' ? pathEl.getPointAtLength(0.68 * totalLen) : { x: 1016, y: 157 };
 
-      const destX = svgRect.left + (pt.x * scaleX);
-      const destY = svgRect.top + ((pt.y - 48) * scaleY);
-      const landingContactY = destY + (size * 0.42);
+      // Landing anchor on top of "SOFTWARE" (~0.68 * totalLen)
+      const landingLen = 0.68 * totalLen;
+      const initialPt = typeof pathEl.getPointAtLength === 'function' ? pathEl.getPointAtLength(landingLen) : { x: 1016, y: 157 };
+      const landingDestX = svgRect.left + (initialPt.x * scaleX);
+      const landingDestY = svgRect.top + ((initialPt.y - 48) * scaleY);
+      const landingContactY = landingDestY + (size * 0.42);
+
+      const destX = landingDestX;
+      const destY = landingDestY;
 
       // Smooth progress lerp
       const target = animRef.current.targetProgress;
@@ -201,6 +208,53 @@ export function HeroScrollCharacter() {
 
       const p = curr;
       const elapsed = animRef.current.elapsed;
+
+      // Active rolling calculation along the curvy text once reached (p > 0.88)
+      let rollX = landingDestX;
+      let rollY = landingDestY;
+      let rollAngle = 0;
+      let curveSlopeAngle = 0;
+
+      if (p > 0.88) {
+        animRef.current.rollTime += dt;
+        const rTime = animRef.current.rollTime;
+
+        // Oscillate & roll smoothly across the curvy text track on its own
+        // Span between 0.22 * totalLen (over "DESIGN") and 0.78 * totalLen (over "AI • GAME")
+        const minL = 0.22 * totalLen;
+        const maxL = 0.78 * totalLen;
+        const midL = (minL + maxL) / 2;
+        const ampL = (maxL - minL) / 2;
+
+        // Starting phase aligned with landingLen so initial position matches landingDestX, landingDestY seamlessly
+        const initialPhase = Math.asin(Math.max(-0.99, Math.min(0.99, (landingLen - midL) / ampL)));
+        const rollSpeed = 160; // px/s rolling across words
+        const omega = rollSpeed / ampL;
+
+        const phase = initialPhase - (rTime * omega);
+        const currentLen = midL + ampL * Math.sin(phase);
+        const linearVel = -ampL * omega * Math.cos(phase);
+
+        // Physical rolling rotation:
+        animRef.current.rollAngle += (linearVel * dt / radius) * (180 / Math.PI);
+        rollAngle = animRef.current.rollAngle;
+
+        // Path point along the curvy text:
+        const clampedLen = Math.max(0, Math.min(totalLen, currentLen));
+        const ptOnCurve = typeof pathEl.getPointAtLength === 'function' ? pathEl.getPointAtLength(clampedLen) : initialPt;
+
+        // Tangent & slope angle:
+        const dS = 2;
+        const pPrev = pathEl.getPointAtLength(Math.max(0, clampedLen - dS));
+        const pNext = pathEl.getPointAtLength(Math.min(totalLen, clampedLen + dS));
+        curveSlopeAngle = Math.atan2((pNext.y - pPrev.y) * scaleY, (pNext.x - pPrev.x) * scaleX);
+
+        rollX = svgRect.left + (ptOnCurve.x * scaleX);
+        rollY = svgRect.top + ((ptOnCurve.y - 48) * scaleY);
+      } else {
+        animRef.current.rollTime = 0;
+        animRef.current.rollAngle = 0;
+      }
 
       // Cubic Bézier Trajectory:
       const jumpHeight = isMobile ? 55 : isTablet ? 75 : 95;
@@ -218,7 +272,7 @@ export function HeroScrollCharacter() {
       let scaleY_trans = 1;
       let rotation = 0;
       let bounceShadowPulse = 1;
-      let isFlying = p > 0.08 && p < 0.92;
+      let isFlying = p > 0.08 && p < 0.90;
       let flightAngle = 0;
 
       if (p < 0.08) {
@@ -258,18 +312,15 @@ export function HeroScrollCharacter() {
         const takeoff = (p - 0.08) / 0.12;
         scaleY_trans = 1.0 + Math.sin(takeoff * Math.PI) * 0.12;
         scaleX_trans = 1.0 - Math.sin(takeoff * Math.PI) * 0.06;
-      } else if (p > 0.90) {
-        // Landed on curvy letters: subtle squash & gentle settling bounce
-        const landP = (p - 0.90) / 0.10;
-        const settlePhase = (elapsed * 4.0) % Math.PI;
-        const settleH = Math.sin(settlePhase);
-        idleY = -settleH * (isMobile ? 6 : 8) * landP;
-        scaleY_trans = 1.0 - Math.sin(landP * Math.PI) * 0.08;
-        scaleX_trans = 1.0 + Math.sin(landP * Math.PI) * 0.06;
+      } else if (p > 0.88) {
+        // Landed and rolling on curvy text: subtle physical squash
+        const landP = (p - 0.88) / 0.12;
+        scaleY_trans = 1.0 - (0.05 * landP);
+        scaleX_trans = 1.0 + (0.05 * landP);
       }
 
       // Flight tilt tangent along trajectory
-      if (p >= 0.02 && p <= 0.94) {
+      if (p >= 0.02 && p <= 0.90) {
         const deltaT = 0.01;
         const nextP = Math.min(1, p + deltaT);
         const prevP = Math.max(0, p - deltaT);
@@ -277,6 +328,15 @@ export function HeroScrollCharacter() {
         const dy = bezier(nextP, p0.y, p1.y, p2.y, p3.y) - bezier(prevP, p0.y, p1.y, p2.y, p3.y);
         flightAngle = Math.atan2(dy, dx) * (180 / Math.PI);
         rotation = Math.max(-18, Math.min(24, flightAngle * 0.45));
+      }
+
+      // Blend smoothly into the active rolling position & rotation once on the curvy text
+      if (p > 0.88) {
+        const rollBlend = Math.min(1, (p - 0.88) / 0.12);
+        posX = lerp(posX, rollX, rollBlend);
+        posY = lerp(posY, rollY, rollBlend);
+        const curveBank = curveSlopeAngle * (180 / Math.PI);
+        rotation = lerp(rotation, rollAngle + (curveBank * 0.25), rollBlend);
       }
 
       // Apply GPU transform directly to wrapper
@@ -310,12 +370,15 @@ export function HeroScrollCharacter() {
         }
       }
 
-      // Landing shadow on Curvy Letters
+      // Landing shadow on Curvy Letters: tracks the rolling ball seamlessly
       if (landingShadowRef.current) {
         if (p > 0.75) {
           const landShadowP = (p - 0.75) / 0.25;
           const shadowScale = landShadowP * 0.90;
-          landingShadowRef.current.style.transform = `translate3d(${destX.toFixed(2)}px, ${landingContactY.toFixed(2)}px, 0) translate(-50%, -50%) scale(${shadowScale.toFixed(2)})`;
+          const shadowX = lerp(landingDestX, rollX, Math.min(1, Math.max(0, (p - 0.88) / 0.12)));
+          const shadowY = lerp(landingContactY, rollY + (size * 0.42), Math.min(1, Math.max(0, (p - 0.88) / 0.12)));
+          const shadowRot = curveSlopeAngle * (180 / Math.PI);
+          landingShadowRef.current.style.transform = `translate3d(${shadowX.toFixed(2)}px, ${shadowY.toFixed(2)}px, 0) translate(-50%, -50%) rotate(${shadowRot.toFixed(1)}deg) scale(${shadowScale.toFixed(2)})`;
           landingShadowRef.current.style.opacity = Math.max(0, landShadowP * 0.70).toFixed(3);
         } else {
           landingShadowRef.current.style.opacity = '0';
