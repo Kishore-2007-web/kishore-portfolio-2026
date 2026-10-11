@@ -12,8 +12,31 @@ import { DigitalBall2D } from './DigitalBall2D';
  * 5. Soars high over "AL" and "EXPERIENCES THAT MATTER"
  * 6. Lands directly on top of the curvy letters of the marquee loop
  * 7. Fully reversible: Scrolling up returns the character along the same trajectory back to "T"
- * 8. High performance: Uses GPU transforms via RAF with zero React re-renders on scroll
  */
+
+// ============================================================================
+// CHARACTER POSITION & BOUNCE CONFIGURATION
+// Easily adjust the starting position and bounce dynamics here:
+// ============================================================================
+export const CHARACTER_START_CONFIG = {
+  // Horizontal offset from the center of letter "T" (px)
+  // Positive (+) shifts right, Negative (-) shifts left
+  offsetX: 0,
+
+  // Vertical resting position from the top of the letter "T" (px)
+  // Smaller number = moves HIGHER up, Larger number = moves LOWER down
+  offsetYDesktop: 24,
+  offsetYTablet: 18,
+  offsetYMobile: 12,
+
+  // Bounce peak height on top of "T" (px)
+  bounceHeightDesktop: 14,
+  bounceHeightMobile: 10,
+
+  // Bounce rhythm speed (cycles per second multiplier)
+  bounceSpeed: 4.8,
+};
+
 export function HeroScrollCharacter() {
   const wrapperRef = useRef(null);
   const shadowRef = useRef(null);
