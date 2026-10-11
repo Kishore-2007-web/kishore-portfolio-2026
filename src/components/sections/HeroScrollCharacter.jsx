@@ -21,16 +21,16 @@ import { DigitalBall2D } from './DigitalBall2D';
 export const CHARACTER_START_CONFIG = {
   // Horizontal offset from the center of letter "T" (px)
   // Positive (+) shifts right, Negative (-) shifts left
-  offsetX: 0,
+  offsetX: 4,
 
-  // Vertical resting position from the top of the letter "T" (px)
-  // Smaller number = moves HIGHER up, Larger number = moves LOWER down
-  offsetYDesktop: 24,
-  offsetYTablet: 18,
-  offsetYMobile: 12,
+  // Vertical offset adjustment from the top edge of letter "T" (px)
+  // 0 = resting directly on top of the crossbar
+  // Negative (-) moves higher up, Positive (+) moves lower down
+  offsetY: 18.5,
 
   // Bounce peak height on top of "T" (px)
-  bounceHeightDesktop: 14,
+  bounceHeightDesktop: 15,
+  bounceHeightTablet: 12,
   bounceHeightMobile: 10,
 
   // Bounce rhythm speed (cycles per second multiplier)
@@ -63,20 +63,37 @@ export function HeroScrollCharacter() {
     squashY: 1,
   });
 
-  // 1. Theme Detection
+  // 1. Theme Detection (Auto-detects data-theme, class, and system dark/light mode)
   useEffect(() => {
+    const detectIsWhiteTheme = () => {
+      const themeAttr = document.documentElement.getAttribute('data-theme');
+      if (themeAttr === 'white' || themeAttr === 'light') return true;
+      if (themeAttr === 'black' || themeAttr === 'dark') return false;
+      if (document.documentElement.classList.contains('white') || document.documentElement.classList.contains('light')) return true;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return true;
+      return false;
+    };
+
     const updateTheme = () => {
-      const theme = document.documentElement.getAttribute('data-theme');
-      setIsWhiteTheme(theme === 'white');
+      setIsWhiteTheme(detectIsWhiteTheme());
     };
     updateTheme();
 
     const observer = new MutationObserver(updateTheme);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme'],
+      attributeFilter: ['data-theme', 'class'],
     });
-    return () => observer.disconnect();
+
+    const mql = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+    if (mql) mql.addEventListener('change', updateTheme);
+    window.addEventListener('storage', updateTheme);
+
+    return () => {
+      observer.disconnect();
+      if (mql) mql.removeEventListener('change', updateTheme);
+      window.removeEventListener('storage', updateTheme);
+    };
   }, []);
 
   // 2. Responsive Size
@@ -148,18 +165,25 @@ export function HeroScrollCharacter() {
       const isMobile = window.innerWidth < 640;
       const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
       const size = isMobile ? 30 : isTablet ? 34 : 38;
+      const radius = size / 2;
 
-      // 1. Starting position (directly on the horizontal crossbar of "T" in "DIGITAL")
-      const startX = tRect.left + (tRect.width / 2);
-      const startY = tRect.top + (isMobile ? 12 : 24);
-      const contactY = startY + (size * 0.42);
+      // 1. Starting position (EXACTLY on the top crossbar of "T" in "DIGITAL")
+      // In font Outfit (lineHeight 1.05), the visual crossbar of the uppercase "T" is positioned
+      // at tRect.top + crossbarVisualOffset within the line box:
+      const crossbarVisualOffset = isMobile ? 14 : isTablet ? 17 : 20;
+      const surfaceY = tRect.top + crossbarVisualOffset + (CHARACTER_START_CONFIG.offsetY || 0);
+      const startX = tRect.left + (tRect.width / 2) + (CHARACTER_START_CONFIG.offsetX || 0);
+      // Resting center position is exactly `radius` above the top surface
+      const startY = surfaceY - radius;
+      // Shadow rests directly on the top surface of the horizontal crossbar
+      const contactY = surfaceY;
 
       // 2. Destination position (directly on top of the curvy letters)
       const scaleX = svgRect.width / 1440;
-      const scaleY = svgRect.height / 320;
+      const scaleY = svgRect.height / 495;
       const totalLen = typeof pathEl.getTotalLength === 'function' ? pathEl.getTotalLength() : 1677;
       const pt = typeof pathEl.getPointAtLength === 'function' ? pathEl.getPointAtLength(0.68 * totalLen) : { x: 1016, y: 157 };
-      
+
       const destX = svgRect.left + (pt.x * scaleX);
       const destY = svgRect.top + ((pt.y - 48) * scaleY);
       const landingContactY = destY + (size * 0.42);
@@ -200,14 +224,16 @@ export function HeroScrollCharacter() {
       if (p < 0.08) {
         // ENERGETIC RHYTHMIC BOUNCE ON TOP OF "T"
         const bounceFactor = 1 - (p / 0.08);
-        const bounceSpeed = 4.8; // ~80-90 rhythmic bounces per minute
-        const bounceH = (isMobile ? 10 : 14) * bounceFactor;
+        const bounceSpeed = CHARACTER_START_CONFIG.bounceSpeed || 4.8;
+        const bounceH = (isMobile
+          ? CHARACTER_START_CONFIG.bounceHeightMobile
+          : isTablet
+            ? CHARACTER_START_CONFIG.bounceHeightTablet
+            : CHARACTER_START_CONFIG.bounceHeightDesktop) * bounceFactor;
 
         // Inverted absolute sine gives realistic parabolic gravity bounce
         const phase = (elapsed * bounceSpeed) % Math.PI;
         const normalizedH = Math.sin(phase); // 0 at T touchdown, 1 at apex
-
-        idleY = -normalizedH * bounceH;
 
         if (normalizedH < 0.20) {
           // Touchdown / hitting the top of the T: squash against the crossbar!
@@ -215,12 +241,15 @@ export function HeroScrollCharacter() {
           scaleY_trans = 1.0 - (0.22 * squashP);
           scaleX_trans = 1.0 + (0.20 * squashP);
           bounceShadowPulse = 1.35 * (1 + 0.2 * squashP);
+          // Keep bottom of the ball firmly anchored to the surface of T while squashing:
+          idleY = (radius * (1 - scaleY_trans)) - (normalizedH * bounceH);
         } else {
           // In the air: slight elongation upward
           const stretchP = ((normalizedH - 0.20) / 0.80) * bounceFactor;
           scaleY_trans = 1.0 + (0.08 * stretchP);
           scaleX_trans = 1.0 - (0.05 * stretchP);
-          bounceShadowPulse = 1.0 - (0.45 * stretchP);
+          bounceShadowPulse = Math.max(0.2, 1.0 - (stretchP * 0.45));
+          idleY = -normalizedH * bounceH;
         }
 
         rotation = Math.sin(elapsed * 1.8) * 2.5 * bounceFactor;
@@ -304,10 +333,10 @@ export function HeroScrollCharacter() {
     };
   }, []);
 
-  // Theme-adaptive shadow color
+  // Grounding contact shadow color: dark radial shadow in both light & dark themes
   const shadowColor = isWhiteTheme
-    ? 'rgba(0, 0, 0, 0.45)'
-    : 'rgba(255, 255, 255, 0.45)';
+    ? 'rgba(0, 0, 0, 0.40)'
+    : 'rgba(0, 0, 0, 0.70)';
 
   return (
     <div

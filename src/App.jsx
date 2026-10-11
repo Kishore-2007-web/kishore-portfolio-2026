@@ -17,7 +17,6 @@ import { GitHubSection } from './components/sections/GitHubSection';
 import { ContactSection } from './components/sections/ContactSection';
 import { Footer } from './components/sections/Footer';
 import { KisaCompanion } from './components/ai/KisaCompanion';
-import { DigitalCompanion } from './components/DigitalCompanion/DigitalCompanion';
 
 export function App() {
   return (
@@ -49,7 +48,6 @@ export function App() {
       </main>
       <Footer />
       <KisaCompanion />
-      <DigitalCompanion />
     </div>
   );
 }

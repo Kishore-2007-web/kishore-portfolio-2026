@@ -100,20 +100,33 @@ export function DigitalBall2D({
     return () => cancelAnimationFrame(rafId);
   }, [size, isFlying, flightAngle]);
 
-  // Color schemes for Dark & White themes
+  // Color schemes for Dark & Light (White) themes:
+  // - Dark Mode: Ball turns WHITE (radiant ceramic white with glowing cyan pupils)
+  // - Light Mode: Ball turns BLACK (glossy obsidian ceramic with cybernetic cyan pupils)
   const bodyBg = isWhiteTheme
-    ? 'radial-gradient(circle at 35% 30%, #ffffff 0%, #f3f5f8 50%, #d8dee8 100%)'
-    : 'radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e8f0 45%, #94a3b8 85%, #64748b 100%)';
+    ? 'radial-gradient(circle at 35% 30%, #3a3d45 0%, #1c1d22 45%, #0d0e12 85%, #050608 100%)'
+    : 'radial-gradient(circle at 35% 30%, #ffffff 0%, #f1f5f9 45%, #cbd5e1 85%, #94a3b8 100%)';
 
   const bodyBorder = isWhiteTheme
-    ? '1px solid rgba(0, 0, 0, 0.18)'
-    : '1px solid rgba(255, 255, 255, 0.40)';
+    ? '1px solid rgba(0, 0, 0, 0.50)'
+    : '1px solid rgba(255, 255, 255, 0.45)';
 
   const bodyGlow = isWhiteTheme
-    ? '0 4px 14px rgba(0, 0, 0, 0.14), inset 0 2px 4px rgba(255, 255, 255, 0.9)'
-    : '0 0 16px rgba(0, 229, 255, 0.35), 0 4px 18px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.8)';
+    ? '0 6px 18px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.30)'
+    : '0 0 16px rgba(0, 229, 255, 0.35), 0 4px 18px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.85)';
 
-  const eyeColor = isWhiteTheme ? '#0f172a' : '#0a0f1d';
+  const specularBg = isWhiteTheme
+    ? 'rgba(255, 255, 255, 0.38)'
+    : 'rgba(255, 255, 255, 0.70)';
+
+  const eyeSocketBg = isWhiteTheme ? '#090d16' : '#0a0f1d';
+  const eyeSocketBorder = isWhiteTheme ? '1px solid rgba(0, 229, 255, 0.45)' : 'none';
+  const eyeSocketShadow = isWhiteTheme
+    ? '0 0 8px rgba(0, 229, 255, 0.6), inset 0 1px 2px rgba(0,0,0,0.8)'
+    : '0 0 6px rgba(0, 229, 255, 0.4)';
+
+  const pupilBg = '#00f0ff';
+  const pupilGlow = isWhiteTheme ? '0 0 8px #00e5ff' : '0 0 6px #00e5ff';
   const catchlightColor = '#ffffff';
 
   const eyeW = Math.round(size * 0.22);
@@ -137,7 +150,7 @@ export function DigitalBall2D({
         overflow: 'hidden',
         transformOrigin: '50% 100%',
         transform: `scale(${squashX}, ${squashY})`,
-        transition: 'transform 0.05s ease-out',
+        transition: 'transform 0.05s ease-out, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease',
         userSelect: 'none',
       }}
     >
@@ -150,10 +163,11 @@ export function DigitalBall2D({
           width: `${Math.round(size * 0.35)}px`,
           height: `${Math.round(size * 0.18)}px`,
           borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.65)',
+          background: specularBg,
           filter: 'blur(1px)',
           transform: 'rotate(-25deg)',
           pointerEvents: 'none',
+          transition: 'background 0.4s ease',
         }}
       />
 
@@ -176,13 +190,14 @@ export function DigitalBall2D({
             width: `${eyeW}px`,
             height: `${eyeH}px`,
             borderRadius: '50%',
-            background: eyeColor,
+            background: eyeSocketBg,
+            border: eyeSocketBorder,
+            boxShadow: eyeSocketShadow,
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transition: 'transform 0.08s ease',
-            boxShadow: isWhiteTheme ? 'inset 0 1px 2px rgba(0,0,0,0.4)' : '0 0 6px rgba(0, 229, 255, 0.4)',
+            transition: 'transform 0.08s ease, background 0.4s ease, box-shadow 0.4s ease',
           }}
         >
           {/* Pupil / Gaze Target */}
@@ -192,8 +207,8 @@ export function DigitalBall2D({
               width: `${pupilSize}px`,
               height: `${pupilSize}px`,
               borderRadius: '50%',
-              background: isWhiteTheme ? '#00e5ff' : '#00f0ff',
-              boxShadow: '0 0 6px #00e5ff',
+              background: pupilBg,
+              boxShadow: pupilGlow,
               position: 'relative',
               display: 'flex',
               alignItems: 'flex-start',
@@ -220,13 +235,14 @@ export function DigitalBall2D({
             width: `${eyeW}px`,
             height: `${eyeH}px`,
             borderRadius: '50%',
-            background: eyeColor,
+            background: eyeSocketBg,
+            border: eyeSocketBorder,
+            boxShadow: eyeSocketShadow,
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transition: 'transform 0.08s ease',
-            boxShadow: isWhiteTheme ? 'inset 0 1px 2px rgba(0,0,0,0.4)' : '0 0 6px rgba(0, 229, 255, 0.4)',
+            transition: 'transform 0.08s ease, background 0.4s ease, box-shadow 0.4s ease',
           }}
         >
           {/* Pupil / Gaze Target */}
@@ -236,8 +252,8 @@ export function DigitalBall2D({
               width: `${pupilSize}px`,
               height: `${pupilSize}px`,
               borderRadius: '50%',
-              background: isWhiteTheme ? '#00e5ff' : '#00f0ff',
-              boxShadow: '0 0 6px #00e5ff',
+              background: pupilBg,
+              boxShadow: pupilGlow,
               position: 'relative',
               display: 'flex',
               alignItems: 'flex-start',
